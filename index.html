@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QWTF.live Race Records</title>
+<style>
+:root{color-scheme:dark light;--bg:#1e2329;--panel:#272d35;--sel:#323a44;--line:#3b444f;--text:#e8ecf0;--mute:#9aa5b1;--red:#e0604a;--blue:#5c9be0}
+@media(prefers-color-scheme:light){:root{--bg:#e6e9ed;--panel:#f4f6f8;--sel:#dbe0e6;--line:#c5ccd4;--text:#1d2228;--mute:#5d6874;--red:#b93a26;--blue:#2a69b3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Bahnschrift,"DIN Alternate","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+header,main{max-width:1100px;margin:0 auto;padding:0 24px}
+header{padding-top:32px}
+h1{margin:0;font-size:clamp(28px,5vw,44px);font-weight:600;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--mute)}
+main{display:grid;grid-template-columns:300px 1fr;gap:24px;margin-top:20px;margin-bottom:48px}
+@media(max-width:760px){main{grid-template-columns:1fr}}
+input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);font:inherit}
+#maps{list-style:none;margin:8px 0 0;padding:0;max-height:68vh;overflow:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+#maps li+li{border-top:1px solid var(--line)}
+#maps button{display:block;width:100%;padding:10px 12px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+#maps button:hover{background:var(--sel)}
+#maps button[aria-current=true]{background:var(--sel);box-shadow:inset 3px 0 var(--blue)}
+#maps small{display:block;color:var(--mute)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#champ{padding:4px 0 20px}
+#champ h2{margin:0;font-size:clamp(22px,4vw,30px);font-weight:600}
+#champ .t{margin:0;font-size:clamp(44px,10vw,84px);line-height:1.05;font-weight:600;color:var(--red)}
+#champ p{margin:0;color:var(--mute)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 14px;text-align:left;white-space:nowrap}
+th{font-weight:500;color:var(--mute);border-bottom:1px solid var(--line)}
+td+td,th+th{padding-left:20px}
+tbody tr+tr td{border-top:1px solid var(--line)}
+tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
+.r{text-align:right}
+.msg{padding:16px;color:var(--mute)}
+</style>
+</head>
+<body>
+<header>
+  <h1>QWTF.live race records</h1>
+  <p class="sub" id="stamp">Loading records…</p>
+</header>
+<main>
+  <nav>
+    <input id="q" type="search" placeholder="Find a map" aria-label="Find a map" autocomplete="off">
+    <ul id="maps"></ul>
+  </nav>
+  <section>
+    <div id="champ"></div>
+    <div class="wrap"><div id="board" class="msg">Pick a map.</div></div>
+  </section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+let index = [], current = null;
+
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text !== undefined) e.textContent = text;
+  if (cls) e.className = cls;
+  return e;
+}
+function fmt(t) {
+  const m = Math.floor(t / 60), s = t - m * 60;
+  return m > 0 ? m + ":" + s.toFixed(3).padStart(6, "0") : s.toFixed(3) + "s";
+}
+function ago(iso) {
+  const sec = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+  if (sec < 90) return "just now";
+  if (sec < 5400) return Math.round(sec / 60) + " min ago";
+  if (sec < 129600) return Math.round(sec / 3600) + " h ago";
+  return Math.round(sec / 86400) + " days ago";
+}
+async function getJSON(path) {
+  const r = await fetch(path + "?t=" + Date.now());
+  if (!r.ok) throw new Error(path + " returned " + r.status);
+  return r.json();
+}
+
+function renderList() {
+  const term = $("#q").value.trim().toLowerCase();
+  const ul = $("#maps");
+  ul.replaceChildren();
+  const shown = index.filter(m => m.map.toLowerCase().includes(term));
+  if (!shown.length) { const li = el("li", "No maps match.", "msg"); ul.append(li); return; }
+  for (const m of shown) {
+    const b = el("button", m.map);
+    b.append(el("small", m.best ? fmt(m.best) + " by " + m.holder : "No records yet"));
+    if (m.map === current) b.setAttribute("aria-current", "true");
+    b.onclick = () => select(m.map);
+    const li = el("li"); li.append(b); ul.append(li);
+  }
+}
+
+async function select(map) {
+  current = map;
+  history.replaceState(null, "", "#" + encodeURIComponent(map));
+  renderList();
+  const entry = index.find(m => m.map === map);
+  const champ = $("#champ"), board = $("#board");
+  champ.replaceChildren();
+  try {
+    const d = await getJSON("data/" + entry.file);
+    const recs = d.records || [];
+    champ.append(el("h2", map));
+    if (!recs.length) { board.className = "msg"; board.textContent = "No completions yet. Type race in game to set the first record."; return; }
+    champ.append(el("p", fmt(recs[0].time), "t"), el("p", recs[0].racer + " as " + recs[0].class + ", set " + ago(entry.updated)));
+    const t = el("table");
+    const hr = el("tr");
+    for (const h of ["#", "Racer", "Class", "Time", "Flag", "Date"]) hr.append(el("th", h, h === "Time" || h === "Flag" ? "r" : ""));
+    t.append(el("thead")).firstChild.append(hr);
+    const tb = el("tbody");
+    for (const r of recs) {
+      const tr = el("tr");
+      tr.append(el("td", r.rank), el("td", r.racer), el("td", r["class"]), el("td", fmt(r.time), "r"), el("td", r.split > 0 ? fmt(r.split) : "–", "r"), el("td", r.date));
+      tb.append(tr);
+    }
+    t.append(tb);
+    board.className = ""; board.replaceChildren(t);
+  } catch (e) {
+    board.className = "msg"; board.textContent = "Could not load this map's records. " + e.message;
+  }
+}
+
+async function refresh(first) {
+  try {
+    const d = await getJSON("data/index.json");
+    index = (d.maps || []).slice().sort((a, b) => new Date(b.updated) - new Date(a.updated));
+    $("#stamp").textContent = index.length + " maps with records. Page checks for new times every minute.";
+    if (first) current = decodeURIComponent(location.hash.slice(1)) || (index[0] && index[0].map);
+    renderList();
+    if (current && index.some(m => m.map === current)) await select(current);
+    else if (!index.length) $("#board").textContent = "No records yet.";
+  } catch (e) {
+    $("#stamp").textContent = "Records are not published yet. " + e.message;
+  }
+}
+$("#q").addEventListener("input", renderList);
+refresh(true);
+setInterval(() => refresh(false), 60000);
+</script>
+</body>
+</html>
