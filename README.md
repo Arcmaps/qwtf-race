@@ -1,4 +1,4 @@
-QWTF Live Race Server
+QWTF Live Race Server 1.1
 ====================
 
 The server files here are already compiled and run on Windows. Click run_race_server_win.bat to start the server.
@@ -18,3 +18,12 @@ Use normal QuakeWorld Team Fortress binds. Bind 'race' and 'unrace' to start or 
 If 'race' is selected before class, Soldier will be chosen by default.
 
 Change map with 'cmd votemap mapname' or the new Map Menu
+
+---------------
+
+Version 1.1
+-Revised some inefficient code left over from QWTF Live
+-Built a new Map Menu
+
+Version 1.0
+-Initial release
