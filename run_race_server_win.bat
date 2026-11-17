@@ -6,6 +6,9 @@ echo ============================================================
 echo   Starting QWTF Live - Race Mode Server (Windows)
 echo ============================================================
 
+:run
+echo [%date% %time%] Starting server >> "%~dp0server_exit.log"
+
 REM 1. Locate FTEQW / FortressOne server executable
 set "SV_BIN="
 if exist "fortressonesv64.exe" (
@@ -65,4 +68,8 @@ REM 4. Launch server in QuakeWorld fortress mode and exec race_server.cfg
 REM    (Note: Do NOT pass +map here so the 'map' line inside race_server.cfg is respected!)
 %SV_BIN% +gamedir fortress +set sv_progs "qwprogs.dat" +set sv_nqplayerphysics 0 +set sv_public 1 +set com_protocolname FortressOne +set com_protocolversion 3 +set sv_gamename "FortressOne" +serverinfo gametype "qwtflive" +exec race_server.cfg
 echo [%date% %time%] Server exited, code %errorlevel% >> "%~dp0server_exit.log"
-pause
+
+REM 5. Restart automatically. Press Ctrl+C during the countdown to stop for good.
+echo Restarting in 10 seconds. Press Ctrl+C to stop.
+timeout /t 10
+goto run
