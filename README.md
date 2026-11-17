@@ -1,7 +1,7 @@
 QWTF Live Race Server
 ====================
 
-The server files here are already compiled and run on Windows.
+The server files here are already compiled and run on Windows. Click run_race_server_win.bat to start the server.
 
 To play:
 
