@@ -315,7 +315,7 @@ void (entity player) LogEventGoal = {
 
     player.caps = player.caps + 1;
     if (race_mode)
-        Race_OnFlagCapture(player);
+        race_pending_capture_player = player;
     AnnounceEvent("capture", player);
 
     if (canlog == 0)

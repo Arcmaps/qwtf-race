@@ -1909,7 +1909,7 @@ void (entity Goal, entity AP, float addb) DoResults = {
                         bprint(PRINT_HIGH, AP.netname,
                                 Q" \scaptured\s the \sred\s flag!\n");
                         AP.items = AP.items - (AP.items & IT_KEY2);
-                        if (race_mode) Race_OnFlagCapture(AP);
+                        if (race_mode) race_pending_capture_player = AP;
                     } else {
                         if (Goal.goal_no == 4) {
                             te = find(world, classname, "player");
@@ -1931,7 +1931,7 @@ void (entity Goal, entity AP, float addb) DoResults = {
                             bprint(PRINT_HIGH, AP.netname,
                                     Q" \scaptured\s the \sblue\s flag!\n");
                             AP.items = AP.items - (AP.items & IT_KEY1);
-                            if (race_mode) Race_OnFlagCapture(AP);
+                            if (race_mode) race_pending_capture_player = AP;
                         }
                     }
                 }
@@ -2013,7 +2013,7 @@ void (entity Goal, entity AP, float addb) DoResults = {
     if (Goal.classname != "item_tfgoal") {
         Goal.goal_state = TFGS_ACTIVE;
     }
-    if (Goal.goal_result & 4) {
+    if ((Goal.goal_result & 4) && !race_mode) {
         TeamFortress_TeamShowScores(1);
         winners = TeamFortress_TeamGetWinner();
         te = find(world, classname, "player");
@@ -2035,6 +2035,11 @@ void (entity Goal, entity AP, float addb) DoResults = {
     DoTriggerWork(Goal, AP);
     if (Goal.classname == "info_tfgoal")
         SetupRespawn(Goal);
+    if (race_mode && race_pending_capture_player != world) {
+        entity cap_pl = race_pending_capture_player;
+        race_pending_capture_player = world;
+        Race_OnFlagCapture(cap_pl);
+    }
 };
 
 void () tfgoal_touch = {

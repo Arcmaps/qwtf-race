@@ -802,6 +802,7 @@ float race_split_time;
 entity race_active_racer;
 entity race_blue_spawn;
 entity race_controller_ent;
+entity race_pending_capture_player;
 
 .float race_state;
 .float race_ready_deadline;
@@ -813,6 +814,8 @@ entity race_controller_ent;
 .float race_saved_pc;
 .float race_best_personal;
 .float race_afk_waiting;
+.float race_synced_team;
+.float race_synced_pc;
 
 void () Race_Init;
 entity () Race_GetBlueSpawn;

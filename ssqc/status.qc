@@ -106,17 +106,24 @@ void (entity Player, float index, entity Item, float icon) InitClientFlagStatus 
 void (entity Player) InitAllStatuses = {
     entity tfdet = get_tfdet();
     if(tfdet) {
-        InitClientFlagStatus(Player, 0, Finditem(tfdet.display_item_status1), FLAGINFO_ICON_FLAG);
-        InitClientFlagStatus(Player, 1, Finditem(tfdet.display_item_status2), FLAGINFO_ICON_FLAG);
-        InitClientFlagStatus(Player, 2, Finditem(tfdet.display_item_status3), FLAGINFO_ICON_FLAG);
-        InitClientFlagStatus(Player, 3, Finditem(tfdet.display_item_status4), FLAGINFO_ICON_FLAG);
+        if (tfdet.display_item_status1)
+            InitClientFlagStatus(Player, 0, Finditem(tfdet.display_item_status1), FLAGINFO_ICON_FLAG);
+        if (tfdet.display_item_status2)
+            InitClientFlagStatus(Player, 1, Finditem(tfdet.display_item_status2), FLAGINFO_ICON_FLAG);
+        if (tfdet.display_item_status3)
+            InitClientFlagStatus(Player, 2, Finditem(tfdet.display_item_status3), FLAGINFO_ICON_FLAG);
+        if (tfdet.display_item_status4)
+            InitClientFlagStatus(Player, 3, Finditem(tfdet.display_item_status4), FLAGINFO_ICON_FLAG);
     }
 
     int c;
+    int tracked_cnt = 0;
     entity* goals = find_list(classname, "info_tfgoal", EV_STRING, c);
     for (int i = 0; i < c; i ++) {
-        if (goals[i].track_goal)
+        if (goals[i].track_goal && tracked_cnt < 4) {
             InitClientFlagStatus(Player, -1, goals[i], FLAGINFO_ICON_BUTTON);
+            tracked_cnt++;
+        }
     }
 };
 

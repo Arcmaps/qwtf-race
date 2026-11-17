@@ -66,31 +66,38 @@ float(float evtype, float scanx, float chary, float devid) CSQC_InputEvent = {
                         vote_list_offset++;
                         return TRUE;
                     case K_ENTER:
-                        if(vote_selected_item && current_vote == vote_selected_item.owner) {
-                            localcmd("cmd break\n");
-                        } else {
-                            localcmd("cmd votemap ", vote_selected_item.owner.name, "\n");
+                        string enter_map = (vote_list_filter != "") ? vote_list_filter : race_selected_map;
+                        if (enter_map != "") {
+                            if (current_vote && current_vote.name == enter_map) {
+                                localcmd("cmd break\n");
+                            } else {
+                                localcmd("cmd votemap ", enter_map, "\n");
+                            }
                         }
                         return TRUE;
                     case K_BACKSPACE:
-                         if(strlen(vote_list_filter) > 0) {
-                            vote_list_filter = substring(vote_list_filter, 0, strlen(vote_list_filter) - 1); 
+                        if(strlen(vote_list_filter) > 0) {
+                            vote_list_filter = substring(vote_list_filter, 0, strlen(vote_list_filter) - 1);
+                            race_selected_map = vote_list_filter;
+                            race_selected_grid_idx = -1;
                             ApplyMapFilter();
                         }
                         return TRUE;
                     case K_DEL: //blank it out
                         if(strlen(vote_list_filter) > 0) {
                             vote_list_filter = "";
+                            race_selected_map = "";
+                            race_selected_grid_idx = -1;
                             ApplyMapFilter();
                         }
                         return TRUE;
                     default:
-                        //48 = '0' .. 57 = '9'
-                        //97 = 'a' .. 122 = 'z'
-                        //45 = '-'
-                        if((scanx >= 48 && scanx <= 57) || (scanx >= 97 && scanx <= 122) || scanx == 45) {
+                        //48 = '0' .. 57 = '9', 97 = 'a' .. 122 = 'z', 45 = '-', 95 = '_'
+                        if((scanx >= 48 && scanx <= 57) || (scanx >= 97 && scanx <= 122) || scanx == 45 || scanx == 95 || chary == 95) {
                             if(strlen(vote_list_filter) < MAP_MAX_CHARS) {
                                 vote_list_filter = strcat(vote_list_filter, chr2str(chary));
+                                race_selected_map = vote_list_filter;
+                                race_selected_grid_idx = -1;
                                 ApplyMapFilter();
                             }
                             return TRUE;

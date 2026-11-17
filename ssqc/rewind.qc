@@ -138,6 +138,8 @@ RewindSnapshot* RewindLog(RewindState* target) {
         error("Log mismatch\n");
 
     target->owner->client_lastupdate = time;
+    if (race_mode && target->owner.team_no == 0)
+        return &target->snapshot[target->cur];
 
     RewindSnapshot* rs = &target->snapshot[target->cur];
     RewindSnapshot* last = rs;
@@ -196,11 +198,15 @@ static void RewindRestore(RewindState* rs, float type) {
 }
 
 static void RL_StashPositions(RewindState* head) {
+    if (race_mode)
+        return;
     RL_FOR_EACH(head, rs)
         RewindSave(rs);
 }
 
 static void RL_RestorePositions(RewindState* head) {
+    if (race_mode)
+        return;
     RL_FOR_EACH(head, rs)
         RewindRestore(rs, kPresent);
 }
@@ -261,6 +267,8 @@ static void RewindTo(RewindState* rstate, float rtime) {
 
 // TODO: Filter out observers, but no harm immediately.
 static void RL_RewindTo(RewindState* head, entity exclude, float rtime) {
+    if (race_mode)
+        return;
     float show_rewind_points =
         CF_GetSetting("rds", "rewind_debug_show", DEBUG_REWIND ? "on" : "off");
 
@@ -341,6 +349,8 @@ void RW_RestoreAll() {
 float (string ps_short, string ps_setting, string ps_default) CF_GetSetting;
 
 float RewindPlayersExcept(entity except, float farthest_rewind_point) {
+    if (race_mode)
+        return FALSE;
     float rewind_max_offset = (MAX_SNAPSHOTS - 1) * SERVER_FRAME_DT;
     farthest_rewind_point = max(farthest_rewind_point,
                                 time - rewind_max_offset);

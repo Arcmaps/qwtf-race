@@ -107,7 +107,7 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init = {
 
     registercommand("wpp_status");
     registercommand("perf_status");
-    for(float i = 0; i < MENU_OPTION.length - 1; i++) {
+    for(float i = 0; i < 11; i++) {
         registercvar(strcat("fo_menu_option_",MENU_OPTION[i]), MENU_OPTION[i]);
     }
     registercvar("fo_menu_option_+", "=");
@@ -124,6 +124,8 @@ noref void(float apiver, string enginename, float enginever) CSQC_Init = {
     vote_list_offset = 0;
     current_vote = world;
     vote_list_filter = "";
+    race_selected_map = "";
+    race_selected_grid_idx = -1;
 
     PM_Init();
 

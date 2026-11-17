@@ -757,7 +757,7 @@ vector drawShowScoresTeamPanel (FO_Hud_Panel *panel, FO_ScoreBoardTeam* team,
     // FIXME - hardcoded 4 length on all column names... (pl has 2, name and score have 5)
     // of just never have any other columns with more than 4 chars
     float txtlength = strlen("name") * smalltext.x;
-    float namespace = size_x - ((txtlength + padding) * (FO_ScoreBoardColumns.length - 1) - padding);
+    float namespace = size_x - ((txtlength + padding) * 13 - padding);
 
     float classspace = strlen("class") * smalltext.x;
 
@@ -1189,7 +1189,7 @@ var FO_Hud_Panel Hud_Panels[] = {
 //  Style, Snap, Status
 
     {HUDP_TEAMSCORE, "teamscore", FO_HUD_TEAM_SCORE_NAME,  '0 0',     '72 12',  2,0,1,FO_HUD_INSERT_AFTER, 0, drawTeamScorePanel, {return "";}},
-    {HUDP_MAP_MENU, "mapmenu", FO_HUD_MAP_MENU_NAME,      '10 30',   '800 400',1,0,1,FO_HUD_INSERT_MIDDLE, 1, drawMapMenuPanel, {return "";}},
+    {HUDP_MAP_MENU, "mapmenu", FO_HUD_MAP_MENU_NAME,      '10 30',   '520 200',1,0,1,FO_HUD_INSERT_MIDDLE, 1, drawMapMenuPanel, {return "";}},
     {HUDP_SHOWSCORES, "showscores", FO_HUD_SHOWSCORES_NAME, '10 100',  '600 200',1,0,1,FO_HUD_INSERT_MIDDLE, 1, drawShowScoresPanel, {return "";}},
     {HUDP_MENU, "menu", "Menu",                       '10 110',  '300 200',1,0,1,0,1, drawSimplePanel, {return "";}},
     {HUDP_MENU_HINT, "menuhint", FO_HUD_MENU_HINT_NAME,    '100 300', '300 24', 1,0,1,0,1, drawTextPanel, {return SBAR.Hint;}},

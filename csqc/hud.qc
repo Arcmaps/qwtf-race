@@ -257,12 +257,48 @@ void (float dx, float dy) Hud_MapMenuPanel_Move = {
     }
 };
 
+string (float idx) Race_GetGridMapName = {
+    switch (idx) {
+        case 0: return "1on1forts";
+        case 1: return "2farms";
+        case 2: return "2fort5r";
+        case 3: return "5speed5";
+        case 4: return "8-1";
+        case 5: return "alchemy";
+        case 6: return "desperat";
+        case 7: return "disorder";
+        case 8: return "dragongod2";
+        case 9: return "egypt3";
+        case 10: return "etf_xpress";
+        case 11: return "excel3";
+        case 12: return "ff-phantomr";
+        case 13: return "ff-shoop";
+        case 14: return "ff-swoop";
+        case 15: return "genders2r";
+        case 16: return "japanc";
+        case 17: return "openfirer";
+        case 18: return "optics6";
+        case 19: return "poop";
+        case 20: return "preskool";
+        case 21: return "r123";
+        case 22: return "sunnyramps";
+        case 23: return "wc3";
+        case 24: return "zelda";
+    }
+    return "";
+};
+
 void() Hud_DrawMapMenuPanel = {
     FO_Hud_Panel* panel = getHudPanel(HUDP_MAP_MENU);
+    panel.FillSize = [520, 200];
     local vector fillsize = panel.FillSize * panel.Scale;
-    local float alpha = fo_hud_editor?0.2:0.9;
+    local float alpha = fo_hud_editor ? 0.2 : 0.92;
     local vector position = getPanelPosition(panel);
-    if(panel.Display)
+    if (!fo_hud_editor && (position.x < 0 || position.x + fillsize.x > ScreenSize.x)) {
+        position.x = max(0, (ScreenSize.x - fillsize.x) / 2);
+        panel.Position.x = position.x;
+    }
+    if (panel.Display)
         setcursormode(TRUE);
     if (hud_panel(panel->id, position, fillsize, alpha, panel.Display)) {
         // click event
@@ -271,252 +307,92 @@ void() Hud_DrawMapMenuPanel = {
     if (fo_hud_editor)
         return;
 
-    local vector bgcolour = MENU_BG_DARK, textcolour = MENU_TEXT_1;
-    local float textscale = 1, padding = 4, cnt = 0;
-    local float titlesize = 12;
-    local float listitemhover = FALSE;
-    local vector listitemsize = [100, 10], listitempos = [0,0];
-    if(panel.TextScale) {
-        textscale = panel.TextScale;
-    } else {
-        textscale = panel.Scale;
-    }
-    listitemsize.y = listitemsize.y * textscale;
-    titlesize = titlesize * textscale;
-    padding = padding * panel.Scale;
-    listitemsize.x = listitemsize.y * MAP_MAX_CHARS; //20 chars of mapname
+    local float textscale = panel.TextScale ? panel.TextScale : panel.Scale;
+    local float padding = 6 * panel.Scale;
+    local vector text_sz = [8 * textscale, 8 * textscale, 0];
+    local vector label_sz = [10 * textscale, 10 * textscale, 0];
 
-    local vector listviewsize = [listitemsize.x, fillsize.y - padding * 3 - listitemsize.y];
-    local float visiblelistitems = floor(listviewsize.y / listitemsize.y);
-
-     //Window title
-    sui_push_frame(position + [padding,padding], [fillsize.x - padding * 2, titlesize]);
-    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-    sui_text([padding, 0], [titlesize,titlesize], "Map Selection", MENU_TEXT_4, 1, 0);
-    sui_pop_frame();
-
-    //Filter textbox
-    if(vote_list_filter != "") {
-        sui_push_frame(position + [padding,padding], listitemsize + [0,padding]);
-        //sui_border_box([0,0], listitemsize, 1, MENU_BG_DARK, 0.6, 0);
-        sui_fill([0,0], listitemsize + [0,padding], MENU_BG_DARK, 0.6, 0);
-        sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-        sui_text([0, 0], [listitemsize.y, listitemsize.y], vote_list_filter, MENU_TEXT_2, 1, 0);
-        sui_pop_frame();
-    }
-
-    vector listoffset;
-/*
-	sui_list_view_begin(strcat("a", "scrl"), panel.Position + [200,4], [100, 150], [94, 10], num_mapvotes, listoffset, [0, 6]);
-	vector listitem_pos = '0 0 0';
-	for (float index = sui_list_item(listitem_pos); index > -1; index = sui_list_item(listitem_pos))
-	{
-		sui_push_frame(listitem_pos, [94, 10]);
-		//bind_button(strcat("b", ftos(index)), [0, 0], [94, 24], "index is ", ftos(index));
-        hud_button(strcat("b", ftos(index)), listitem_pos, [94, 24], "index is ", ftos(index));
-        //drawstring(listitem_pos, strcat("a", ftos(index)), [8,8], MENU_TEXT_2, 1, 0);
-    
-		sui_pop_frame();
-	}
-	sui_list_view_end();	
-*/
-    //sui_scroll_view_begin("scrolltest", panel.Position + [200,4], [100,100], [100,200], listoffset, [2,6]);
-    //sui_scroll_view_end();
-    sui_border_box(position + [padding, padding * 2 + titlesize], listviewsize, 1, MENU_TEXT_SPEC_FO, 0.6, 0);
-    if(vote_list_offset > num_mapvotes_filtered - visiblelistitems) {
-        vote_list_offset = num_mapvotes_filtered - visiblelistitems;
-    }
-    if(vote_list_offset < 0) {
-        vote_list_offset = 0;
-    }
-    entity mc = find(world, classname, "map_candidate_filtered");
-    while(mc) {
-        if(cnt >= vote_list_offset) {
-            listitempos = position + [padding, padding * 2 + titlesize + listitemsize.y * (cnt - vote_list_offset)];
-            if((listitempos.y + listitemsize.y + padding) > (position.y + fillsize.y)) {
-                //too many to fit
-                break;
-            }
-            listitemhover = (Mouse.x > listitempos.x && Mouse.y > listitempos.y && Mouse.x < (listitempos.x + listitemsize.x) && Mouse.y < (listitempos.y + listitemsize.y));
-            if(listitemhover) {
-                bgcolour = MENU_BORDER; //MENU_UNSELECTED;
-            } else {
-                bgcolour = MENU_BG_DARK;
-            }
-            if(vote_selected_index < 0) {
-                vote_selected_index = 0;
-            }
-            if(vote_selected_index >= num_mapvotes_filtered) {
-                vote_selected_index = num_mapvotes_filtered - 1;
-            }
-            if(vote_selected_index == cnt) {
-                vote_selected_item = mc;
-            }
-            if(!vote_selected_item) {
-                vote_selected_item = mc;
-                vote_selected_index = cnt;
-            }
-            if(mc == vote_selected_item) {
-                alpha = 1;
-                bgcolour = MENU_BG_WARNING;
-            } else {
-                alpha = 0.4;
-            }
-            //sui_border_box(listitempos, listitemsize, 1, bgcolour, 0.4, 0);
-            //sui_fill(listitempos, listitemsize, bgcolour, alpha, 0);
-            //sui_text(listitempos, [listitemsize.y, listitemsize.y], mc.name, textcolour, alpha, 0);
-            sui_push_frame(listitempos, listitemsize);
-            if(current_vote && mc.owner == current_vote) {
-                textcolour = MENU_TEXT_GREEN;
-            } else if(mc.owner.votecount > 0) {
-                textcolour = MENU_TEXT_WARNING;
-            } else {
-                textcolour = MENU_TEXT_1;
-            }
-            if(hud_colour_button(HUDL_MAP_BASE + cnt,[0,0], listitemsize, mc.owner.name, bgcolour, [listitemsize.y, listitemsize.y], textcolour, SUI_ALIGN_START, 2, alpha, alpha, 1)) {
-                vote_selected_item = mc;
-                vote_selected_index = cnt;
-            }
-            if(mc.owner.votecount > 0) {
-                sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-                sui_text([padding * -1, 0], [listitemsize.y, listitemsize.y], ftos(mc.owner.votecount), MENU_TEXT_4, alpha, 0);
-            }
-            sui_pop_frame();
-        }
-        cnt++;
-        mc = find(mc, classname, "map_candidate_filtered");
-    }
-    if(cnt < num_mapvotes_filtered) {
-        //draw scrollbar here
-        //sui_scrollbar("maplist_scrollbar", [listitemsize.x, fillsize.y - padding * 3 - listitemsize.y], [listitemsize.x,listitemsize.y * num_mapvotes], listoffset, [0,6]);
-    }
-        
     sui_border_box(position, fillsize, 1, MENU_BORDER, 0.6, 0);
 
-    //Map heading
-    vector mapheadingpos = [position.x + padding * 2 + listviewsize.x, position.y + padding * 2 + titlesize];
-    float mapinfowidth = fillsize.x - (mapheadingpos.x - position.x);
-    sui_push_frame(mapheadingpos, [mapinfowidth, titlesize]);
-    sui_set_align([SUI_ALIGN_CENTER, SUI_ALIGN_CENTER]);
-    sui_text([padding, 0], [titlesize,titlesize], (vote_selected_item?vote_selected_item.owner.name:"No map selected"), MENU_TEXT_3, 1, 0);
-    sui_pop_frame();
-    
-    if(!vote_selected_item) {
-        return;
-    }
-    
-    float current_vote_selected = FALSE;
-    if(current_vote && current_vote == vote_selected_item.owner) {
-        current_vote_selected = TRUE;
-    }
-
-    ////Make it half the width of the map info area and aspect of 1.25:1 
-    //vector levelshotsize = [mapinfowidth / 2, mapinfowidth * 2 / 5];
-    //No, make it 16:9 and 2/3 of the width
-    vector levelshotsize = [mapinfowidth * 2 / 3, mapinfowidth * 2 * 9 / (3 * 16)];
-
-    //Map image
-    float filehandle;
-    string levelshot = strcat("textures/levelshots/",vote_selected_item.owner.name,".jpg"); //need to fix extensions somehow
-    filehandle = fopen(levelshot, FILE_READ);
-    if (filehandle >= 0) {
-        fclose(filehandle);
-        sui_push_frame([mapheadingpos.x + mapinfowidth - levelshotsize.x - padding,mapheadingpos.y + titlesize + padding * 2], levelshotsize);
-        sui_pic([0,0], levelshotsize, levelshot, [1,1,1], 1, 0);
-        sui_border_box([0,0], levelshotsize, 1, MENU_TEXT_GREEN, 0.6, 0);
-        sui_pop_frame();
-    } else {
-        //placeholder maybe?
-    }
-
-    //Map details
-    float mapdetailgridindex = 0;
-    sui_push_frame(mapheadingpos + [0,titlesize + padding * 2], [mapinfowidth - levelshotsize.x, titlesize]);
-    if(vote_selected_item.owner.group) {
-        sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-        sui_text([padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], "Type:", MENU_TEXT_2, 1, 0);
-        sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-        sui_text([-2 * padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], vote_selected_item.owner.groupname, MENU_TEXT_2, 1, 0);
-        mapdetailgridindex++;
-    }
-    if(vote_selected_item.owner.team_num) {
-        sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-        sui_text([padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], "Teams:", MENU_TEXT_2, 1, 0);
-        sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-        sui_text([-2 * padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], ftos(vote_selected_item.owner.team_num), MENU_TEXT_2, 1, 0);
-        mapdetailgridindex++;
-    }
-    if(vote_selected_item.owner.min_val || vote_selected_item.owner.max_val) {
-        string playernumstring = "";
-        if(vote_selected_item.owner.min_val && vote_selected_item.owner.max_val) {
-            if(vote_selected_item.owner.min_val == vote_selected_item.owner.max_val) {
-                playernumstring = strcat(ftos(vote_selected_item.owner.min_val));
-            } else {
-                playernumstring = strcat(ftos(vote_selected_item.owner.min_val),"-",ftos(vote_selected_item.owner.max_val));
-            }
-        } else if(vote_selected_item.owner.min_val) {
-            playernumstring = strcat(ftos(vote_selected_item.owner.min_val),"+");
-        } else {
-            playernumstring = strcat(ftos(vote_selected_item.owner.max_val),"-");
-        }
-        sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-        sui_text([padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], "Players:", MENU_TEXT_2, 1, 0);
-        sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-        sui_text([-2 * padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], playernumstring, MENU_TEXT_2, 1, 0);
-        mapdetailgridindex++;
-    }
+    // 1. Top line: "Type map name" with a blank field to type the name
+    float top_row_h = 20 * panel.Scale;
+    float label_w = 140 * panel.Scale;
+    sui_push_frame(position + [padding * 2, padding], [label_w, top_row_h]);
     sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-    sui_text([padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], "Client-side:", MENU_TEXT_2, 1, 0);
-    sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-    sui_text([-2 * padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], vote_selected_item.owner.localmap?"\x10\x8f\x11":"\x10 \x11", MENU_TEXT_2, 1, 0);
-    mapdetailgridindex++;
-    if(vote_selected_item.owner.votecount) {
-        if(current_vote_selected) {
-            textcolour = MENU_TEXT_GREEN;
-        } else {
-            textcolour = MENU_TEXT_WARNING;
-        }
-        sui_set_align([SUI_ALIGN_START, SUI_ALIGN_CENTER]);
-        sui_text([padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], "Votes:", textcolour, 1, 0);
-        sui_set_align([SUI_ALIGN_END, SUI_ALIGN_CENTER]);
-        sui_text([-2 * padding, (titlesize + padding) * mapdetailgridindex], [titlesize,titlesize], strcat(ftos(vote_selected_item.owner.votecount),(current_vote_selected?" (yours)":"")), textcolour, 1, 0);
-        mapdetailgridindex++;
+    sui_text([0, 0], label_sz, "Type map name", MENU_TEXT_4, 1, 0);
+    sui_pop_frame();
+
+    vector field_pos = position + [padding * 2 + label_w + padding, padding];
+    vector field_sz = [fillsize.x - (padding * 4 + label_w), top_row_h];
+    if (hud_colour_button(HUDB_MAP_INPUT, field_pos, field_sz, vote_list_filter, MENU_BG_DARK, label_sz, MENU_TEXT_2, SUI_ALIGN_START, 6, 0.85, 1, 0)) {
+        race_selected_grid_idx = -1;
     }
-    sui_pop_frame();
 
+    // 2. 5x5 grid of pre-filled maps
+    float grid_top = padding * 2 + top_row_h + 2 * panel.Scale;
+    float gap_x = 4 * panel.Scale;
+    float gap_y = 4 * panel.Scale;
+    float grid_w = fillsize.x - padding * 4;
+    float cell_w = (grid_w - gap_x * 4) / 5;
+    float cell_h = 20 * panel.Scale;
 
-    //Map description
-    vector descriptionpos = [mapheadingpos.x,position.y + fillsize.y - padding * 4 - titlesize - listitemsize.y * 3];
-    sui_push_frame(descriptionpos, [mapinfowidth - padding * 2, listitemsize.y * 3]);
-    sui_set_align([SUI_ALIGN_START, SUI_ALIGN_START]);
-    sui_text([padding / 2, padding / 2], [listitemsize.y,listitemsize.y], vote_selected_item.owner.description, MENU_TEXT_1, 1, 0);
-    //sui_border_box([0,0], [fillsize.x - (mapheadingpos.x - panel.Position.x), listitemsize.y * 3], 1, MENU_BORDER, 0.6, 0);
-    sui_border_box([0,0], [mapinfowidth - padding, listitemsize.y * 3], 1, MENU_BORDER, 0.6, 0);
-    sui_pop_frame();
-    
-    sui_push_frame(descriptionpos + [0, listitemsize.y * 3 + padding], [mapinfowidth - padding * 2, listitemsize.y * 3]);
-    sui_set_align([SUI_ALIGN_END, SUI_ALIGN_START]);
-    if(current_vote_selected) {
-        if(hud_colour_button(HUDB_MAP_VOTE, [0,0], listitemsize + [0,padding], "Unvote", MENU_BUTTON, [listitemsize.y,listitemsize.y], MENU_TEXT_1, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
+    for (float row = 0; row < 5; row++) {
+        for (float col = 0; col < 5; col++) {
+            float idx = row * 5 + col;
+            string mname = Race_GetGridMapName(idx);
+            vector cell_pos = position + [padding * 2 + col * (cell_w + gap_x), grid_top + row * (cell_h + gap_y)];
+
+            float is_sel = (vote_list_filter == "" && race_selected_grid_idx == idx) ||
+                           (vote_list_filter != "" && vote_list_filter == mname);
+            vector btn_bg = is_sel ? MENU_BG_WARNING : MENU_BG_DARK;
+            float btn_alpha = is_sel ? 1.0 : 0.75;
+            vector btn_txt_col = MENU_TEXT_1;
+            if (current_vote && current_vote.name == mname)
+                btn_txt_col = MENU_TEXT_GREEN;
+            else if (is_sel)
+                btn_txt_col = MENU_TEXT_3;
+
+            if (hud_colour_button(HUDL_MAP_BASE + idx, cell_pos, [cell_w, cell_h], mname, btn_bg, text_sz, btn_txt_col, SUI_ALIGN_CENTER, 0, btn_alpha, 1, 0)) {
+                race_selected_grid_idx = idx;
+                race_selected_map = mname;
+                vote_list_filter = "";
+            }
+        }
+    }
+
+    // 3. Bottom row: 'Change Now' and 'Vote' options
+    string target_map = (vote_list_filter != "") ? vote_list_filter : race_selected_map;
+    float current_vote_selected = (target_map != "" && current_vote && current_vote.name == target_map);
+
+    float bot_h = 20 * panel.Scale;
+    float bot_y = position.y + fillsize.y - padding - bot_h;
+    float act_btn_w = 110 * panel.Scale;
+
+    vector change_pos = [position.x + fillsize.x - padding * 2 - act_btn_w * 2 - gap_x, bot_y];
+    vector vote_pos = [position.x + fillsize.x - padding * 2 - act_btn_w, bot_y];
+
+    if (hud_colour_button(HUDB_MAP_CHANGE, change_pos, [act_btn_w, bot_h], "Change Now", MENU_BUTTON, label_sz, MENU_TEXT_WARNING, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
+        if (target_map != "") {
+            if (is_admin) {
+                localcmd("cmd map ", target_map, "\n");
+            } else {
+                localcmd("rcon map ", target_map, "\n");
+            }
+        }
+    }
+
+    if (current_vote_selected) {
+        if (hud_colour_button(HUDB_MAP_VOTE, vote_pos, [act_btn_w, bot_h], "Unvote", MENU_BUTTON, label_sz, MENU_TEXT_1, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
             localcmd("cmd break\n");
-            //current_vote = world;
         }
     } else {
-        if(hud_colour_button(HUDB_MAP_VOTE, [0,0], listitemsize + [0,padding], "Vote", MENU_BUTTON, [listitemsize.y,listitemsize.y], MENU_TEXT_1, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
-            localcmd("cmd votemap ", vote_selected_item.owner.name, "\n");
+        if (hud_colour_button(HUDB_MAP_VOTE, vote_pos, [act_btn_w, bot_h], "Vote", MENU_BUTTON, label_sz, MENU_TEXT_1, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
+            if (target_map != "") {
+                localcmd("cmd votemap ", target_map, "\n");
+            }
         }
     }
-    if(hud_colour_button(HUDB_MAP_CHANGE, [0 - listitemsize.x - padding,0], listitemsize + [0,padding], "Change Now", MENU_BUTTON, [listitemsize.y,listitemsize.y], MENU_TEXT_WARNING, SUI_ALIGN_CENTER, 0, 1, 1, 0)) {
-        if(is_admin) {
-            localcmd("cmd map ", vote_selected_item.owner.name, "\n");
-        } else {
-            localcmd("rcon map ", vote_selected_item.owner.name, "\n");
-        }
-    }
-
-    sui_pop_frame();
-    
-}
+};
 
 void() Hud_DrawTeamScorePanel = {
     float alpha = 0;
@@ -571,12 +447,13 @@ void Hud_DrawFlagStatusBar()
 {
     vector pos;
     float sizey, sizex;
-    sizey = FO_Hud_Icon_Size_y * getHudPanel(HUDP_FLAGINFO)->Scale;
-    sizex = FO_Hud_Icon_Size_x * getHudPanel(HUDP_FLAGINFO)->Scale;
+    FO_Hud_Panel* panel = getHudPanel(HUDP_FLAGINFO);
+    sizey = FO_Hud_Icon_Size_y * panel->Scale;
+    sizex = FO_Hud_Icon_Size_x * panel->Scale;
 
     float flagInfoCount = 0;
-    for (float i = FlagInfoLines.length - 1; i >= 0; i--) {
-        if (FlagInfoLines[i].id)
+    for (float k = 0; k < 9; k++) {
+        if (FlagInfoLines[k].id)
             flagInfoCount++;
     }
     //Show one for reference even on maps without
@@ -584,11 +461,10 @@ void Hud_DrawFlagStatusBar()
         flagInfoCount = 1;
     }
     vector fillsize = [sizex * 4, sizey * flagInfoCount];
-    FO_Hud_Panel* panel = getHudPanel(HUDP_FLAGINFO);
     panel->FillSize = fillsize;
     pos = getScaledPanelPosition(panel, 1);
     float alpha = 0;
-    if (hud_panel(panel->id, pos, fillsize, alpha, getHudPanel(HUDP_FLAGINFO)->Display)) {
+    if (hud_panel(panel->id, pos, fillsize, alpha, panel->Display)) {
         // click event
         if (fo_hud_editor)
         {
@@ -596,43 +472,43 @@ void Hud_DrawFlagStatusBar()
         }
     }
 
+    if (flagInfoCount <= 0)
+        return;
+
     float count = 0;
     float org_game = getstatf(STAT_ORG_GAME);
-    for (float i = 0; i < flagInfoCount; i++) {
-        FlagInfoLine* fi = &FlagInfoLines[i];
-        if (!fi->id)
+    for (float m = 0; m < 9; m++) {
+        if (!FlagInfoLines[m].id)
             continue;
 
-        if (org_game && fi->team_no == team_no_attack)
+        if (org_game && FlagInfoLines[m].team_no == team_no_attack)
             continue;
 
-        alpha = fi->state == FLAGINFO_HOME ? CVARF(fo_hud_idle_alpha) : 1;
-        string icon = fi->icon.filename;
-        vector iconcolour = fi->icon.colour;
-        float bigfont = 8 * (getHudPanel(HUDP_FLAGINFO)->TextScale ? getHudPanel(HUDP_FLAGINFO)->TextScale : getHudPanel(HUDP_FLAGINFO)->Scale);
+        alpha = FlagInfoLines[m].state == FLAGINFO_HOME ? CVARF(fo_hud_idle_alpha) : 1;
+        string icon = FlagInfoLines[m].icon.filename;
+        vector iconcolour = FlagInfoLines[m].icon.colour;
+        float bigfont = 8 * (panel->TextScale ? panel->TextScale : panel->Scale);
         float bigfontvoffset = sizey / 2 - bigfont / 2; //Center text against the icon
-        if (fi->state == FLAGINFO_CARRIED) {
-            HRC_drawstring([GetTextAlignOffset(pos_x,sizex,sizex,fi->carrier,bigfont,getHudPanel(HUDP_FLAGINFO)->Orientation), pos_y + bigfontvoffset + sizey * count, 0], fi->carrier, [bigfont,bigfont], '1 0 0', 1, 0);
-        }
-
-        else if (fi->state == FLAGINFO_DROPPED && fi->locname) {
+        if (FlagInfoLines[m].state == FLAGINFO_CARRIED) {
+            HRC_drawstring([GetTextAlignOffset(pos_x,sizex,sizex,FlagInfoLines[m].carrier,bigfont,panel->Orientation), pos_y + bigfontvoffset + sizey * count, 0], FlagInfoLines[m].carrier, [bigfont,bigfont], '1 0 0', 1, 0);
+        } else if (FlagInfoLines[m].state == FLAGINFO_DROPPED && FlagInfoLines[m].locname) {
             HRC_drawstring([
-                    GetTextAlignOffset(pos_x, sizex, sizex, fi->locname,
-                        bigfont, getHudPanel(HUDP_FLAGINFO)->Orientation), 
+                    GetTextAlignOffset(pos_x, sizex, sizex, FlagInfoLines[m].locname,
+                        bigfont, panel->Orientation), 
                     pos_y + sizey * count + 2, 0],
-                    fi->locname, [bigfont,bigfont], '1 1 1', 1, 0);
+                    FlagInfoLines[m].locname, [bigfont,bigfont], '1 1 1', 1, 0);
         }
 
         HRC_drawpic([pos_x, pos_y + sizey * count, 0], icon, [sizex, sizey, 0], iconcolour, alpha, 0);
 
-        if (fi->time_return >= 0) {
-            float ret = max(fi->time_return - time, 0);
+        if (FlagInfoLines[m].time_return >= 0) {
+            float ret = max(FlagInfoLines[m].time_return - time, 0);
             string stime = sprintf("%0.1f", ret);
-            float smallfont = 6 * getHudPanel(HUDP_FLAGINFO)->Scale;
+            float smallfont = 6 * panel->Scale;
             HRC_drawstring(
                     [
                     GetTextAlignOffset(pos_x, sizex, sizex, stime,
-                        smallfont, getHudPanel(HUDP_FLAGINFO)->Orientation),
+                        smallfont, panel->Orientation),
                     pos_y + sizey * (count + 1) - smallfont - 2, 0],
                     stime, [smallfont, smallfont], '1 1 1', 1, 0);
         }
@@ -1218,10 +1094,12 @@ void Hud_DrawRaceOverlay(float width, float height) {
         y += 13;
     }
 
-    if (rbest > 0 || rlast > 0) {
+    if (rbest > 0 || rlast > 0 || rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE) {
         string sub_line = "";
         if (rbest > 0)
             sub_line = strcat("Map Record: ", CSQC_FormatRaceTime(rbest));
+        else if (rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE)
+            sub_line = "Map Record: None";
         if (rlast > 0) {
             if (sub_line != "")
                 sub_line = strcat(sub_line, "   |   ");
@@ -1230,6 +1108,14 @@ void Hud_DrawRaceOverlay(float width, float height) {
         vector sub_sz = '8 8 0';
         float sub_w = stringwidth(sub_line, TRUE, sub_sz);
         drawstring([(width - sub_w) / 2, y, 0], sub_line, sub_sz, '0.85 0.85 0.85', 0.9, 0);
+        y += 12;
+    }
+
+    if (rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE) {
+        string vote_hint = "Change map with cmd votemap mapname";
+        vector hint_sz = '8 8 0';
+        float hint_w = stringwidth(vote_hint, TRUE, hint_sz);
+        drawstring([(width - hint_w) / 2, y, 0], vote_hint, hint_sz, '0.85 0.85 0.85', 0.9, 0);
     }
 }
 

@@ -114,6 +114,8 @@ float vote_selected_index;
 float vote_list_offset;
 entity current_vote;
 string vote_list_filter;
+string race_selected_map;
+float race_selected_grid_idx;
 float zoomed_in;
 
 .string name;
@@ -444,6 +446,7 @@ enum PanelID:float {
     HUDB_FIRST,
     HUDB_MAP_VOTE,
     HUDB_MAP_CHANGE,
+    HUDB_MAP_INPUT,
     HUDB_OPTION_LIST,
     HUDB_OPTION_SCROLLUP,
     HUDB_OPTION_SCROLLDOWN,

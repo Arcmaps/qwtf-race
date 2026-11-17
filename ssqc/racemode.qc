@@ -5,18 +5,21 @@
 // - Single active racer at a time, auto-assigned to Blue team (team_no = 1)
 // - Everyone else waits in an automatic FIFO spectator queue until their turn
 // - Deterministic Blue spawn selection (always uses the exact same Blue spawn)
-// - Class selection allowed before countdown starts
+// - Class selection allowed before countdown starts (defaults to Soldier)
 // - 15-second ready timer upon joining Blue team; moves player to back of queue
 //   if 'race' is not typed within 15 seconds
 // - 'race' starts a 3-second countdown in spawn with movement/weapons frozen
 // - High-precision timer starts in spawn at the end of countdown and stops on
 //   flag capture (with flag pickup split tracking)
+// - 90-second maximum run time limit (automatically ends run failed at 90s)
 // - 'unrace' abandons the current run at any time
 // - Built-in Top 10 leaderboard persistence per map + JSON/Webhook export
 // ============================================================================
 
 #define MAX_RACE_RECORDS 10
 #define RACE_MAX_RUN_TIME 90.0
+#define MAX_CACHED_GOALS 32
+#define MAX_CACHED_BREAKABLES 64
 
 struct RaceRecord {
     float rec_time;
@@ -28,6 +31,49 @@ struct RaceRecord {
 
 static RaceRecord map_records[MAX_RACE_RECORDS];
 static float num_map_records;
+static float race_records_loaded;
+static string race_loaded_map;
+
+static entity race_cached_goals[MAX_CACHED_GOALS];
+static float num_race_cached_goals;
+static entity race_cached_breakables[MAX_CACHED_BREAKABLES];
+static float num_race_cached_breakables;
+static float race_map_ents_cached;
+
+static entity race_active_players[32];
+static float num_race_active_players;
+static float race_waiting_count;
+
+static string race_last_server_status;
+
+static void (string new_status) Race_SetServerStatus = {
+    if (race_last_server_status == new_status && new_status != "")
+        return;
+    if (race_last_server_status != "")
+        strunzone(race_last_server_status);
+    race_last_server_status = strzone(new_status);
+    localcmd(strcat("serverinfo status \"", new_status, "\"\n"));
+};
+
+static void (entity pl, float tno, float pc) Race_SyncPlayerInfokeys = {
+    if (pl.race_synced_team != tno) {
+        pl.race_synced_team = tno;
+        forceinfokey(pl, "team_no", ftos(tno));
+    }
+    if (pl.race_synced_pc != pc) {
+        pl.race_synced_pc = pc;
+        forceinfokey(pl, "playerclass", ftos(pc));
+    }
+};
+
+static void (string snd_cmd) Race_BroadcastSound = {
+    entity e = nextent(world);
+    for (float i = 0; i < 32 && e != world; i++) {
+        if (e.classname == "player" && !e.has_disconnected)
+            stuffcmd(e, snd_cmd);
+        e = nextent(e);
+    }
+};
 
 string (float sec) Race_FormatTime = {
     if (sec <= 0)
@@ -84,6 +130,25 @@ static void () Race_SaveRecords = {
 };
 
 static void () Race_LoadRecords = {
+    if (race_records_loaded && race_loaded_map == mapname && mapname != "")
+        return;
+
+    for (float k = 0; k < num_map_records; k++) {
+        if (map_records[k].racer != "") {
+            strunzone(map_records[k].racer);
+            map_records[k].racer = "";
+        }
+        if (map_records[k].date != "") {
+            strunzone(map_records[k].date);
+            map_records[k].date = "";
+        }
+    }
+
+    if (race_loaded_map != "")
+        strunzone(race_loaded_map);
+    race_loaded_map = strzone(mapname);
+    race_records_loaded = TRUE;
+
     num_map_records = 0;
     race_best_time = 0;
     race_best_holder = "";
@@ -212,101 +277,179 @@ entity () Race_GetBlueSpawn = {
     return spot;
 };
 
-// Resets all flags, projectiles, buildings, and doors between race runs
-void () Race_ResetMapState = {
-    entity te, oldself;
+static void () Race_CacheMapEntities = {
+    num_race_cached_goals = 0;
+    num_race_cached_breakables = 0;
 
-    // 1. Return all goal items (flags/keys) immediately to their home positions
-    te = find(world, classname, "item_tfgoal");
+    entity te = find(world, classname, "item_tfgoal");
     while (te != world) {
-        if (te.owner != world) {
-            tfgoalitem_RemoveEffectsFromPlayer(te, te.owner);
-            te.owner.has_flag = FALSE;
-            RemoveFlagFollow(te.owner);
-            te.owner = world;
+        if (num_race_cached_goals < MAX_CACHED_GOALS) {
+            race_cached_goals[num_race_cached_goals] = te;
+            num_race_cached_goals++;
         }
-        te.goal_state = TFGS_INACTIVE;
-        if (te.goal_activation & 8192)
-            te.solid = SOLID_BBOX;
-        else
-            te.solid = SOLID_TRIGGER;
-        te.movetype = 0;
-        te.velocity = '0 0 0';
-        te.touch = item_tfgoal_touch;
-        te.origin = te.oldorigin;
-        if (te.mdl != string_null) {
-            oldself = self;
-            self = te;
-            TF_Item_ApplyGlow();
-            self = oldself;
-            FO_SetModel(te, te.mdl);
-        }
-        setsize(te, te.goal_min, te.goal_max);
-        setorigin(te, te.origin);
-        te.nextthink = 0;
-        te.think = SUB_Null;
         te = find(te, classname, "item_tfgoal");
+    }
+
+    te = find(world, classname, "func_breakable");
+    while (te != world) {
+        if (num_race_cached_breakables < MAX_CACHED_BREAKABLES) {
+            race_cached_breakables[num_race_cached_breakables] = te;
+            num_race_cached_breakables++;
+        }
+        te = find(te, classname, "func_breakable");
+    }
+
+    race_map_ents_cached = TRUE;
+};
+
+static void (entity te) Race_ResetSingleGoalItem = {
+    entity oldself;
+    if (te.owner != world) {
+        tfgoalitem_RemoveEffectsFromPlayer(te, te.owner);
+        te.owner.has_flag = FALSE;
+        RemoveFlagFollow(te.owner);
+        te.owner = world;
+    }
+    te.goal_state = TFGS_INACTIVE;
+    if (te.goal_activation & 8192)
+        te.solid = SOLID_BBOX;
+    else
+        te.solid = SOLID_TRIGGER;
+    te.movetype = 0;
+    te.velocity = '0 0 0';
+    te.touch = item_tfgoal_touch;
+    te.origin = te.oldorigin;
+    if (te.mdl != string_null) {
+        oldself = self;
+        self = te;
+        TF_Item_ApplyGlow();
+        self = oldself;
+        FO_SetModel(te, te.mdl);
+    }
+    setsize(te, te.goal_min, te.goal_max);
+    setorigin(te, te.origin);
+    te.nextthink = 0;
+    te.think = SUB_Null;
+};
+
+// Resets all flags, projectiles, buildings, and breakables between race runs
+void () Race_ResetMapState = {
+    entity te;
+
+    if (!race_map_ents_cached && time > 0.05)
+        Race_CacheMapEntities();
+
+    // 1. Return goal items (flags/keys) immediately to their home positions
+    if (race_map_ents_cached) {
+        for (float i = 0; i < num_race_cached_goals; i++) {
+            te = race_cached_goals[i];
+            if (te != world && te.classname == "item_tfgoal")
+                Race_ResetSingleGoalItem(te);
+        }
+    } else {
+        te = find(world, classname, "item_tfgoal");
+        while (te != world) {
+            Race_ResetSingleGoalItem(te);
+            te = find(te, classname, "item_tfgoal");
+        }
     }
     flag_update = 1;
     ClientsFlagUpdate(world);
 
-    // 2. Restore any breakables
-    te = find(world, classname, "func_breakable");
-    while (te != world) {
-        setmodel(te, te.mdl);
-        te.solid = SOLID_BSP;
-        te = find(te, classname, "func_breakable");
-    }
-
-    // 3. Remove active grenades, pipebombs, detpacks, buildings, backpacks, ammoboxes
-    RemoveAllEntsByClassname("grenade");
-    RemoveAllEntsByClassname("pipebomb");
-    RemoveAllEntsByClassname("detpack");
-    RemoveAllEntsByClassname("primer");
-    RemoveAllEntsByClassname("primetimer");
-    RemoveAllEntsByClassname("gastimer");
-    RemoveAllEntsByClassname("backpack");
-    RemoveAllEntsByClassname("ammobox");
-    RemoveAllEntsByClassname("flagfollow");
-    RemoveAllEntsByClassname("building_sentrygun");
-    RemoveAllEntsByClassname("building_sentrygun_base");
-    RemoveAllEntsByClassname("building_dispenser");
-};
-
-static float (entity exclude_pl) Race_CountWaitingPlayers = {
-    float cnt = 0;
-    entity e = find(world, classname, "player");
-    while (e != world) {
-        if (!e.has_disconnected && e != exclude_pl && !e.race_afk_waiting) {
-            cnt++;
+    // 2. Restore breakables
+    if (race_map_ents_cached) {
+        for (float j = 0; j < num_race_cached_breakables; j++) {
+            te = race_cached_breakables[j];
+            if (te != world && te.classname == "func_breakable") {
+                setmodel(te, te.mdl);
+                te.solid = SOLID_BSP;
+            }
         }
-        e = find(e, classname, "player");
+    } else {
+        te = find(world, classname, "func_breakable");
+        while (te != world) {
+            setmodel(te, te.mdl);
+            te.solid = SOLID_BSP;
+            te = find(te, classname, "func_breakable");
+        }
     }
-    return cnt;
+
+    // 3. Single-pass removal of active grenades, pipebombs, detpacks, buildings, backpacks, ammoboxes
+    entity next_e;
+    te = nextent(world);
+    while (te != world) {
+        next_e = nextent(te);
+        string cn = te.classname;
+        if (cn == "grenade" ||
+            cn == "pipebomb" ||
+            cn == "detpack" ||
+            cn == "primer" ||
+            cn == "primetimer" ||
+            cn == "gastimer" ||
+            cn == "backpack" ||
+            cn == "ammobox" ||
+            cn == "flagfollow" ||
+            cn == "building_sentrygun" ||
+            cn == "building_sentrygun_base" ||
+            cn == "building_dispenser") {
+            dremove(te);
+        }
+        te = next_e;
+    }
 };
 
 static void () Race_UpdateQueuePositions = {
-    // Compute 1-based queue position for every waiting player ordered by race_queue_time
-    entity p = find(world, classname, "player");
-    while (p != world) {
-        if (p.has_disconnected || p == race_active_racer) {
+    num_race_active_players = 0;
+    race_waiting_count = 0;
+
+    // Single pass over client slots (1..32) to collect connected players
+    entity e = nextent(world);
+    for (float slot = 0; slot < 32 && e != world; slot++) {
+        if (e.classname == "player" && !e.has_disconnected) {
+            if (num_race_active_players < 32) {
+                race_active_players[num_race_active_players] = e;
+                num_race_active_players++;
+            }
+            if (e != race_active_racer && !e.race_afk_waiting) {
+                race_waiting_count++;
+            }
+        }
+        e = nextent(e);
+    }
+
+    // Compute 1-based queue position using only the compact connected-player array
+    for (float i = 0; i < num_race_active_players; i++) {
+        entity p = race_active_players[i];
+        if (p == race_active_racer) {
             p.race_queue_pos = 0;
         } else {
             float pos = 1;
-            entity other_p = find(world, classname, "player");
-            while (other_p != world) {
-                if (!other_p.has_disconnected && other_p != race_active_racer && other_p != p) {
+            for (float j = 0; j < num_race_active_players; j++) {
+                entity other_p = race_active_players[j];
+                if (other_p != race_active_racer && other_p != p) {
                     if (other_p.race_queue_time < p.race_queue_time ||
                         (other_p.race_queue_time == p.race_queue_time && num_for_edict(other_p) < num_for_edict(p))) {
                         pos++;
                     }
                 }
-                other_p = find(other_p, classname, "player");
             }
             p.race_queue_pos = pos;
         }
-        p = find(p, classname, "player");
     }
+};
+
+static float (entity exclude_pl) Race_CountWaitingPlayers = {
+    Race_UpdateQueuePositions();
+    if (exclude_pl == race_active_racer)
+        return race_waiting_count;
+
+    float cnt = 0;
+    for (float i = 0; i < num_race_active_players; i++) {
+        entity e = race_active_players[i];
+        if (e != world && !e.has_disconnected && e != exclude_pl && !e.race_afk_waiting)
+            cnt++;
+    }
+    return cnt;
 };
 
 static void (entity pl, float to_back) Race_MakeQueuedSpectator = {
@@ -359,8 +502,7 @@ static void (entity pl, float to_back) Race_MakeQueuedSpectator = {
         pl.fixangle = 1;
     }
 
-    forceinfokey(pl, "team_no", "0");
-    forceinfokey(pl, "playerclass", "0");
+    Race_SyncPlayerInfokeys(pl, 0, 0);
     SetTeamName(pl);
     stuffcmd(pl, "color 0 0\n");
     UpdateClientMenu_Close(pl);
@@ -394,8 +536,7 @@ static void (entity pl) Race_AssignActiveRacer = {
     pl.nextpc = chosen_pc;
     pl.last_playerclass = PC_UNDEFINED;
 
-    forceinfokey(pl, "team_no", "1");
-    forceinfokey(pl, "playerclass", ftos(chosen_pc));
+    Race_SyncPlayerInfokeys(pl, 1, chosen_pc);
 
     entity oldself = self;
     self = pl;
@@ -414,7 +555,7 @@ static void (entity pl) Race_AssignActiveRacer = {
     bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s is up on ^4BLUE^7 team! (15s to pick class and type '^2race^7')\n", pl.netname));
     sprint(pl, PRINT_HIGH, "^2Your turn to race!^7 Pick your class (1-9) and type '^2race^7' in console within 15 seconds (or '^3unrace^7' to skip).\n");
     CenterPrint(pl, "\n\n\bYour turn on BLUE team!\b\nPick your class & type '\srace\s' within 15s\n");
-    localcmd(strcat("serverinfo status \"Pre-Race: ", pl.netname, "\"\n"));
+    Race_SetServerStatus(strcat("Pre-Race: ", pl.netname));
 };
 
 static void () Race_PromoteNextRacer = {
@@ -427,16 +568,17 @@ static void () Race_PromoteNextRacer = {
         race_active_racer = world;
     }
 
+    Race_UpdateQueuePositions();
+
     entity best = world;
-    entity e = find(world, classname, "player");
-    while (e != world) {
+    for (float i = 0; i < num_race_active_players; i++) {
+        entity e = race_active_players[i];
         if (!e.has_disconnected && !e.race_afk_waiting) {
             if (best == world || e.race_queue_time < best.race_queue_time ||
                 (e.race_queue_time == best.race_queue_time && num_for_edict(e) < num_for_edict(best))) {
                 best = e;
             }
         }
-        e = find(e, classname, "player");
     }
 
     if (best != world) {
@@ -445,7 +587,7 @@ static void () Race_PromoteNextRacer = {
         race_state_global = RACE_STATE_NONE;
         race_timer_start = 0;
         race_split_time = 0;
-        localcmd("serverinfo status \"Waiting for racers\"\n");
+        Race_SetServerStatus("Waiting for racers");
     }
 };
 
@@ -453,6 +595,8 @@ void (entity pl) Race_OnClientConnect = {
     pl.race_queue_time = time;
     pl.race_state = RACE_STATE_NONE;
     pl.race_afk_waiting = 0;
+    pl.race_synced_team = -1;
+    pl.race_synced_pc = -1;
     if (pl.race_saved_pc < 1 || pl.race_saved_pc > 10)
         pl.race_saved_pc = PC_SOLDIER;
 
@@ -484,8 +628,9 @@ float (entity pl) Race_OnPutClientInServer = {
         race_state_global = RACE_STATE_PRERUN;
         race_timer_start = pl.race_ready_deadline;
         race_split_time = 0;
+        Race_UpdateQueuePositions();
         bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s is up on ^4BLUE^7 team! (15s to pick class and type '^2race^7')\n", pl.netname));
-        localcmd(strcat("serverinfo status \"Pre-Race: ", pl.netname, "\"\n"));
+        Race_SetServerStatus(strcat("Pre-Race: ", pl.netname));
     }
 
     if (pl != race_active_racer) {
@@ -497,13 +642,12 @@ float (entity pl) Race_OnPutClientInServer = {
 
     // Active racer on Blue team
     pl.team_no = TEAM_BLUE;
-    forceinfokey(pl, "team_no", "1");
     if (pl.playerclass < 1 || pl.playerclass > 10) {
         pl.playerclass = (pl.race_saved_pc >= 1 && pl.race_saved_pc <= 10) ? pl.race_saved_pc : PC_SOLDIER;
     }
     pl.race_saved_pc = pl.playerclass;
     pl.nextpc = pl.playerclass;
-    forceinfokey(pl, "playerclass", ftos(pl.playerclass));
+    Race_SyncPlayerInfokeys(pl, 1, pl.playerclass);
     return FALSE;
 };
 
@@ -625,7 +769,7 @@ void (entity pl) Race_Cmd_Race = {
     pl.race_saved_pc = pl.playerclass;
     pl.nextpc = pl.playerclass;
     pl.last_playerclass = PC_UNDEFINED;
-    forceinfokey(pl, "playerclass", ftos(pl.playerclass));
+    Race_SyncPlayerInfokeys(pl, 1, pl.playerclass);
 
     // Reset map and respawn racer cleanly at the fixed Blue spawn for the 3-second countdown
     Race_ResetMapState();
@@ -661,7 +805,7 @@ void (entity pl) Race_Cmd_Race = {
 
     bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) started a 3-second race countdown!\n",
         pl.netname, TeamFortress_GetClassName(pl.playerclass)));
-    localcmd(strcat("serverinfo status \"Countdown: ", pl.netname, "\"\n"));
+    Race_SetServerStatus(strcat("Countdown: ", pl.netname));
 };
 
 static void (entity pl, string reason, float allow_solo_repeat) Race_EndTurn = {
@@ -742,14 +886,13 @@ void (entity pl) Race_Cmd_Queue = {
     }
     Race_UpdateQueuePositions();
     float total_q = 0;
-    for (float pos = 1; pos <= 32; pos++) {
-        entity e = find(world, classname, "player");
-        while (e != world) {
-            if (!e.has_disconnected && e != race_active_racer && e.race_queue_pos == pos) {
+    for (float pos = 1; pos <= num_race_active_players; pos++) {
+        for (float i = 0; i < num_race_active_players; i++) {
+            entity e = race_active_players[i];
+            if (e != race_active_racer && e.race_queue_pos == pos) {
                 sprint(pl, PRINT_HIGH, sprintf("  #%d: %s%s\n", pos, e.netname, e.race_afk_waiting ? " (AFK)" : ""));
                 total_q++;
             }
-            e = find(e, classname, "player");
         }
     }
     if (total_q == 0)
@@ -877,8 +1020,9 @@ void (entity pl) Race_PreThink = {
     if (pl.race_state == RACE_STATE_PRERUN || pl.race_state == RACE_STATE_COUNTDOWN) {
         entity spot = Race_GetBlueSpawn();
         if (spot != world) {
-            if (vlen(pl.origin - (spot.origin + '0 0 1')) > 2) {
-                setorigin(pl, spot.origin + '0 0 1');
+            vector lock_pos = spot.origin + '0 0 1';
+            if (vlen(pl.origin - lock_pos) > 2) {
+                setorigin(pl, lock_pos);
             }
         }
         pl.velocity = '0 0 0';
@@ -927,12 +1071,7 @@ void () Race_Controller_Think = {
         if (cd_rem < r.race_last_tick && cd_rem >= 1) {
             r.race_last_tick = cd_rem;
             CenterPrint(r, strcat("\n\n\bRace starts in:\b ", ftos(cd_rem), "...\n\nClass: ", TeamFortress_GetClassName(r.playerclass), "\n"));
-            entity te = find(world, classname, "player");
-            while (te != world) {
-                if (!te.has_disconnected)
-                    stuffcmd(te, "play buttons/switch04.wav\n");
-                te = find(te, classname, "player");
-            }
+            Race_BroadcastSound("play buttons/switch04.wav\n");
         }
         if (time >= r.race_start_time) {
             // GO! Start timer in spawn and unfreeze racer
@@ -966,13 +1105,8 @@ void () Race_Controller_Think = {
             self = oldself;
 
             CenterPrint(r, "\n\n\bGO!\b\n");
-            entity p = find(world, classname, "player");
-            while (p != world) {
-                if (!p.has_disconnected)
-                    stuffcmd(p, "play misc/talk.wav\n");
-                p = find(p, classname, "player");
-            }
-            localcmd(strcat("serverinfo status \"Racing: ", r.netname, "\"\n"));
+            Race_BroadcastSound("play misc/talk.wav\n");
+            Race_SetServerStatus(strcat("Racing: ", r.netname));
         }
     } else if (r.race_state == RACE_STATE_RUNNING) {
         float run_elapsed = time - r.race_start_time;
@@ -1005,15 +1139,27 @@ void () Race_Init = {
     org_game = 1;
     login_required = 0;
 
-    race_active_racer = world;
     race_blue_spawn = world;
-    race_state_global = RACE_STATE_NONE;
-    race_timer_start = 0;
+    race_pending_capture_player = world;
     race_last_time = 0;
     race_split_time = 0;
+    race_map_ents_cached = FALSE;
+    num_race_active_players = 0;
+    race_waiting_count = 0;
+    if (race_last_server_status != "") {
+        strunzone(race_last_server_status);
+        race_last_server_status = "";
+    }
+
+    if (race_active_racer == world || race_active_racer.has_disconnected || race_active_racer.classname != "player") {
+        race_active_racer = world;
+        race_state_global = RACE_STATE_NONE;
+        race_timer_start = 0;
+    }
 
     Race_GetBlueSpawn();
     Race_LoadRecords();
+    Race_CacheMapEntities();
 
     if (race_controller_ent == world) {
         race_controller_ent = spawn();

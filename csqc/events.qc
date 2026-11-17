@@ -30,7 +30,7 @@ void() CSQC_Parse_Event = {
 
             //use next available
             if(index < 0) {
-                for (float i = 0; i < FlagInfoLines.length; i++) {
+                for (float i = 0; i < 9; i++) {
                     if (FlagInfoLines[i].id == 0 || FlagInfoLines[i].id == goalno) {
                         index = i;
                         break;
@@ -90,7 +90,7 @@ void() CSQC_Parse_Event = {
                 case FLAGINFO_RETURNING:
                     break;
             }
-            for (float i = 0; i < FlagInfoLines.length; i++) {
+            for (float i = 0; i < 9; i++) {
                 FlagInfoLine* fil = &FlagInfoLines[i];
                 if (fil->id != goalno)
                     continue;
