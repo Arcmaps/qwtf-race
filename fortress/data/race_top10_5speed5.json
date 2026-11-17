@@ -1,0 +1,8 @@
+{
+  "map": "5speed5",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 14.455, "split": 7.084, "class": "Soldier", "date": "2026-11-15 16:29"},
+    {"rank": 2, "racer": "arc", "time": 15.976, "split": 7.474, "class": "Soldier", "date": "2026-11-15 16:28"},
+    {"rank": 3, "racer": "arc", "time": 16.505, "split": 7.522, "class": "Soldier", "date": "2026-11-15 16:27"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "map": "excel3",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 20.293, "split": 12.324, "class": "Combat Medic", "date": "2026-11-16 01:09"},
+    {"rank": 2, "racer": "arc", "time": 20.343, "split": 12.205, "class": "Combat Medic", "date": "2026-11-16 01:07"},
+    {"rank": 3, "racer": "arc", "time": 20.593, "split": 12.403, "class": "Combat Medic", "date": "2026-11-16 01:03"},
+    {"rank": 4, "racer": "arc", "time": 20.607, "split": 12.456, "class": "Combat Medic", "date": "2026-11-16 01:08"},
+    {"rank": 5, "racer": "arc", "time": 21.244, "split": 12.391, "class": "Combat Medic", "date": "2026-11-16 01:05"},
+    {"rank": 6, "racer": "arc", "time": 21.554, "split": 12.402, "class": "Combat Medic", "date": "2026-11-16 00:58"},
+    {"rank": 7, "racer": "arc", "time": 22.047, "split": 13.077, "class": "Combat Medic", "date": "2026-11-16 01:02"},
+    {"rank": 8, "racer": "arc", "time": 22.609, "split": 12.898, "class": "Combat Medic", "date": "2026-11-16 01:05"}
+  ]
+}

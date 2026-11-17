@@ -1,0 +1,15 @@
+{
+  "map": "etf_xpress",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 10.386, "split": 5.964, "class": "Soldier", "date": "2026-11-16 19:33"},
+    {"rank": 2, "racer": "arc", "time": 10.532, "split": 6.021, "class": "Soldier", "date": "2026-11-16 19:29"},
+    {"rank": 3, "racer": "arc", "time": 10.555, "split": 7.240, "class": "Combat Medic", "date": "2026-11-16 19:24"},
+    {"rank": 4, "racer": "arc", "time": 10.588, "split": 6.168, "class": "Soldier", "date": "2026-11-16 19:27"},
+    {"rank": 5, "racer": "arc", "time": 10.779, "split": 5.920, "class": "Soldier", "date": "2026-11-16 19:29"},
+    {"rank": 6, "racer": "arc", "time": 10.863, "split": 6.066, "class": "Soldier", "date": "2026-11-16 19:32"},
+    {"rank": 7, "racer": "arc", "time": 10.870, "split": 6.164, "class": "Soldier", "date": "2026-11-16 19:32"},
+    {"rank": 8, "racer": "arc", "time": 11.092, "split": 5.866, "class": "Soldier", "date": "2026-11-16 19:28"},
+    {"rank": 9, "racer": "arc", "time": 11.152, "split": 6.056, "class": "Soldier", "date": "2026-11-16 19:28"},
+    {"rank": 10, "racer": "arc", "time": 11.586, "split": 6.009, "class": "Soldier", "date": "2026-11-16 19:32"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "map": "r123",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 19.304, "split": 9.476, "class": "Soldier", "date": "2026-11-15 20:07"},
+    {"rank": 2, "racer": "arc", "time": 19.446, "split": 10.463, "class": "Soldier", "date": "2026-11-15 20:02"},
+    {"rank": 3, "racer": "arc", "time": 19.612, "split": 10.083, "class": "Soldier", "date": "2026-11-15 20:00"},
+    {"rank": 4, "racer": "arc", "time": 19.818, "split": 10.445, "class": "Soldier", "date": "2026-11-15 20:03"},
+    {"rank": 5, "racer": "arc", "time": 20.264, "split": 10.176, "class": "Soldier", "date": "2026-11-15 19:59"},
+    {"rank": 6, "racer": "arc", "time": 20.403, "split": 9.574, "class": "Soldier", "date": "2026-11-15 20:05"},
+    {"rank": 7, "racer": "arc", "time": 21.698, "split": 10.856, "class": "Combat Medic", "date": "2026-11-15 20:00"},
+    {"rank": 8, "racer": "arc", "time": 23.595, "split": 11.219, "class": "Combat Medic", "date": "2026-11-15 20:01"}
+  ]
+}
