@@ -1,15 +1,15 @@
 {
   "map": "wc3",
   "records": [
-    {"rank": 1, "racer": "arc", "time": 10.857, "split": 6.307, "class": "Soldier", "date": "2026-11-16 11:54"},
-    {"rank": 2, "racer": "arc", "time": 11.027, "split": 6.269, "class": "Soldier", "date": "2026-11-16 11:53"},
-    {"rank": 3, "racer": "arc", "time": 11.383, "split": 6.482, "class": "Soldier", "date": "2026-11-16 11:51"},
-    {"rank": 4, "racer": "arc", "time": 11.409, "split": 6.625, "class": "Soldier", "date": "2026-11-16 11:50"},
-    {"rank": 5, "racer": "arc", "time": 11.550, "split": 6.454, "class": "Soldier", "date": "2026-11-16 11:48"},
-    {"rank": 6, "racer": "arc", "time": 11.694, "split": 7.105, "class": "Soldier", "date": "2026-11-16 11:47"},
-    {"rank": 7, "racer": "arc", "time": 12.144, "split": 6.125, "class": "Soldier", "date": "2026-11-16 11:52"},
-    {"rank": 8, "racer": "arc", "time": 12.171, "split": 6.841, "class": "Soldier", "date": "2026-11-16 11:50"},
-    {"rank": 9, "racer": "arc", "time": 12.174, "split": 7.182, "class": "Soldier", "date": "2026-11-16 11:54"},
-    {"rank": 10, "racer": "arc", "time": 12.837, "split": 7.000, "class": "Soldier", "date": "2026-11-16 11:50"}
+    {"rank": 1, "racer": "arc", "time": 10.797, "split": 6.026, "class": "Soldier", "date": "2026-11-17 12:09"},
+    {"rank": 2, "racer": "arc", "time": 10.857, "split": 6.307, "class": "Soldier", "date": "2026-11-16 11:54"},
+    {"rank": 3, "racer": "arc", "time": 10.993, "split": 5.728, "class": "Soldier", "date": "2026-11-17 12:08"},
+    {"rank": 4, "racer": "arc", "time": 11.027, "split": 6.269, "class": "Soldier", "date": "2026-11-16 11:53"},
+    {"rank": 5, "racer": "arc", "time": 11.108, "split": 6.246, "class": "Soldier", "date": "2026-11-17 12:08"},
+    {"rank": 6, "racer": "arc", "time": 11.304, "split": 5.922, "class": "Soldier", "date": "2026-11-17 11:52"},
+    {"rank": 7, "racer": "arc", "time": 11.338, "split": 5.696, "class": "Soldier", "date": "2026-11-17 12:09"},
+    {"rank": 8, "racer": "arc", "time": 11.358, "split": 6.509, "class": "Soldier", "date": "2026-11-17 12:07"},
+    {"rank": 9, "racer": "arc", "time": 11.383, "split": 6.482, "class": "Soldier", "date": "2026-11-16 11:51"},
+    {"rank": 10, "racer": "arc", "time": 11.409, "split": 6.625, "class": "Soldier", "date": "2026-11-16 11:50"}
   ]
 }

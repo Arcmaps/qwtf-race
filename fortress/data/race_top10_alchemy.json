@@ -1,0 +1,15 @@
+{
+  "map": "alchemy",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 14.580, "split": 7.129, "class": "Soldier", "date": "2026-11-16 21:42"},
+    {"rank": 2, "racer": "arc", "time": 14.806, "split": 7.253, "class": "Soldier", "date": "2026-11-16 21:38"},
+    {"rank": 3, "racer": "arc", "time": 14.898, "split": 7.788, "class": "Soldier", "date": "2026-11-16 21:41"},
+    {"rank": 4, "racer": "arc", "time": 15.038, "split": 7.652, "class": "Soldier", "date": "2026-11-16 21:36"},
+    {"rank": 5, "racer": "arc", "time": 15.843, "split": 8.028, "class": "Soldier", "date": "2026-11-16 21:40"},
+    {"rank": 6, "racer": "arc", "time": 15.893, "split": 7.248, "class": "Soldier", "date": "2026-11-16 21:35"},
+    {"rank": 7, "racer": "arc", "time": 17.430, "split": 7.901, "class": "Soldier", "date": "2026-11-16 21:34"},
+    {"rank": 8, "racer": "arc", "time": 18.281, "split": 7.881, "class": "Soldier", "date": "2026-11-16 21:41"},
+    {"rank": 9, "racer": "arc", "time": 21.618, "split": 8.774, "class": "Engineer", "date": "2026-11-16 21:33"},
+    {"rank": 10, "racer": "arc", "time": 22.305, "split": 8.083, "class": "Soldier", "date": "2026-11-16 21:33"}
+  ]
+}
