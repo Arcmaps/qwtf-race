@@ -22,8 +22,11 @@ Change map with 'cmd votemap mapname' or the new Map Menu
 ---------------
 
 Version 1.1
+
 -Revised some inefficient code left over from QWTF Live
+
 -Built a new Map Menu
 
 Version 1.0
+
 -Initial release
