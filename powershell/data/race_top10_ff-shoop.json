@@ -1,0 +1,10 @@
+{
+  "map": "ff-shoop",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 13.472, "split": 6.179, "class": "Scout", "date": "2026-11-15 22:30"},
+    {"rank": 2, "racer": "arc", "time": 14.345, "split": 5.921, "class": "Scout", "date": "2026-11-15 22:28"},
+    {"rank": 3, "racer": "arc", "time": 14.581, "split": 6.196, "class": "Scout", "date": "2026-11-15 22:29"},
+    {"rank": 4, "racer": "arc", "time": 16.124, "split": 6.296, "class": "Scout", "date": "2026-11-15 22:26"},
+    {"rank": 5, "racer": "arc", "time": 16.671, "split": 6.166, "class": "Scout", "date": "2026-11-15 22:25"}
+  ]
+}

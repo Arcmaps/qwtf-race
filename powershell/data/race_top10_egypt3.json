@@ -1,0 +1,15 @@
+{
+  "map": "egypt3",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 15.003, "split": 9.088, "class": "Combat Medic", "date": "2026-11-16 15:14"},
+    {"rank": 2, "racer": "arc", "time": 15.077, "split": 8.109, "class": "Soldier", "date": "2026-11-16 15:09"},
+    {"rank": 3, "racer": "arc", "time": 15.463, "split": 9.314, "class": "Combat Medic", "date": "2026-11-16 15:13"},
+    {"rank": 4, "racer": "arc", "time": 15.494, "split": 8.669, "class": "Soldier", "date": "2026-11-16 15:22"},
+    {"rank": 5, "racer": "arc", "time": 15.695, "split": 8.922, "class": "Soldier", "date": "2026-11-16 15:21"},
+    {"rank": 6, "racer": "arc", "time": 15.894, "split": 9.264, "class": "Combat Medic", "date": "2026-11-16 15:16"},
+    {"rank": 7, "racer": "arc", "time": 16.370, "split": 8.852, "class": "Soldier", "date": "2026-11-16 15:19"},
+    {"rank": 8, "racer": "arc", "time": 16.838, "split": 8.970, "class": "Soldier", "date": "2026-11-16 15:22"},
+    {"rank": 9, "racer": "arc", "time": 16.875, "split": 8.789, "class": "Soldier", "date": "2026-11-16 15:17"},
+    {"rank": 10, "racer": "arc", "time": 16.888, "split": 8.775, "class": "Soldier", "date": "2026-11-16 15:06"}
+  ]
+}

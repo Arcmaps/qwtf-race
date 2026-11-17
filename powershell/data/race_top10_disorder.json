@@ -1,0 +1,11 @@
+{
+  "map": "disorder",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 16.334, "split": 8.313, "class": "Engineer", "date": "2026-11-16 19:57"},
+    {"rank": 2, "racer": "arc", "time": 17.312, "split": 8.423, "class": "Soldier", "date": "2026-11-16 19:54"},
+    {"rank": 3, "racer": "arc", "time": 18.219, "split": 8.794, "class": "Soldier", "date": "2026-11-16 19:53"},
+    {"rank": 4, "racer": "arc", "time": 19.632, "split": 11.195, "class": "Engineer", "date": "2026-11-16 19:49"},
+    {"rank": 5, "racer": "arc", "time": 20.786, "split": 9.502, "class": "Soldier", "date": "2026-11-16 19:52"},
+    {"rank": 6, "racer": "arc", "time": 21.171, "split": 8.561, "class": "Engineer", "date": "2026-11-16 19:51"}
+  ]
+}

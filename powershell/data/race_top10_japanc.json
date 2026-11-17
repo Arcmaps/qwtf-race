@@ -1,0 +1,10 @@
+{
+  "map": "japanc",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 16.359, "split": 9.976, "class": "Combat Medic", "date": "2026-11-16 19:47"},
+    {"rank": 2, "racer": "arc", "time": 17.839, "split": 11.079, "class": "Soldier", "date": "2026-11-16 19:48"},
+    {"rank": 3, "racer": "arc", "time": 17.984, "split": 9.950, "class": "Combat Medic", "date": "2026-11-16 19:46"},
+    {"rank": 4, "racer": "arc", "time": 18.513, "split": 10.642, "class": "Combat Medic", "date": "2026-11-16 19:45"},
+    {"rank": 5, "racer": "arc", "time": 19.219, "split": 10.717, "class": "Soldier", "date": "2026-11-16 19:44"}
+  ]
+}

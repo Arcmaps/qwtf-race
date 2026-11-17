@@ -1,0 +1,15 @@
+{
+  "map": "dragongod2",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 18.437, "split": 10.390, "class": "Combat Medic", "date": "2026-11-16 00:48"},
+    {"rank": 2, "racer": "arc", "time": 19.240, "split": 10.712, "class": "Combat Medic", "date": "2026-11-16 00:46"},
+    {"rank": 3, "racer": "arc", "time": 19.624, "split": 10.979, "class": "Combat Medic", "date": "2026-11-16 00:47"},
+    {"rank": 4, "racer": "arc", "time": 20.545, "split": 10.191, "class": "Combat Medic", "date": "2026-11-15 14:46"},
+    {"rank": 5, "racer": "arc", "time": 20.780, "split": 9.665, "class": "Combat Medic", "date": "2026-11-15 14:46"},
+    {"rank": 6, "racer": "arc", "time": 21.038, "split": 10.157, "class": "Combat Medic", "date": "2026-11-15 14:43"},
+    {"rank": 7, "racer": "arc", "time": 21.465, "split": 10.428, "class": "Combat Medic", "date": "2026-11-15 14:45"},
+    {"rank": 8, "racer": "arc", "time": 21.560, "split": 11.444, "class": "Combat Medic", "date": "2026-11-15 14:45"},
+    {"rank": 9, "racer": "arc", "time": 25.929, "split": 11.811, "class": "Combat Medic", "date": "2026-11-16 00:45"},
+    {"rank": 10, "racer": "arc", "time": 26.587, "split": 15.615, "class": "Combat Medic", "date": "2026-11-15 14:44"}
+  ]
+}
