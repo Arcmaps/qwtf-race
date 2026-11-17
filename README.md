@@ -27,6 +27,8 @@ Version 1.1
 
 -Built a new Map Menu
 
+-Added top racers feature to records page
+
 Version 1.0
 
 -Initial release
