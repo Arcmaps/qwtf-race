@@ -36,6 +36,17 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
 .r{text-align:right}
 .msg{padding:16px;color:var(--mute)}
+#racers{margin-top:16px}
+#racers h3{margin:0 0 8px;font-size:18px;font-weight:600}
+#racers .wrap{max-height:42vh;overflow:auto}
+#racers table{table-layout:fixed;font-size:15px}
+#racers th,#racers td{padding:8px 6px;text-align:center}
+#racers th:first-child,#racers td:first-child{text-align:left;padding-left:12px;overflow:hidden;text-overflow:ellipsis}
+#racers th{line-height:1.2;vertical-align:bottom}
+#racers th:not(:first-child){width:50px}
+#racers th span{display:block;font-size:18px}
+#racers th small{font-size:12px;font-weight:500}
+#racers td.p{font-weight:600}
 </style>
 </head>
 <body>
@@ -47,6 +58,10 @@ tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
   <nav>
     <input id="q" type="search" placeholder="Find a map" aria-label="Find a map" autocomplete="off">
     <ul id="maps"></ul>
+    <section id="racers" aria-label="Top racers">
+      <h3>Top racers</h3>
+      <div class="wrap"><div id="racerBoard" class="msg">Loading racers…</div></div>
+    </section>
   </nav>
   <section>
     <div id="champ"></div>
@@ -56,6 +71,9 @@ tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
 <script>
 const $ = s => document.querySelector(s);
 let index = [], current = null;
+const MEDALS = ["🥇", "🥈", "🥉"];
+const POINTS = [3, 2, 1];   // points for 1st, 2nd, 3rd place on a map
+const pending = {}, done = {};
 
 function el(tag, text, cls) {
   const e = document.createElement(tag);
@@ -73,6 +91,48 @@ function ago(iso) {
   if (sec < 5400) return Math.round(sec / 60) + " min ago";
   if (sec < 129600) return Math.round(sec / 3600) + " h ago";
   return Math.round(sec / 86400) + " days ago";
+}
+function loadMap(entry) {
+  return pending[entry.map] || (pending[entry.map] = getJSON("data/" + entry.file).then(d => (done[entry.map] = d)));
+}
+function renderRacers() {
+  const tally = new Map();
+  for (const m of index) {
+    const d = done[m.map];
+    if (!d) continue;
+    (d.records || []).slice(0, 3).forEach((r, i) => {
+      const name = String(r.racer);
+      const t = tally.get(name) || { name, medals: [0, 0, 0], pts: 0 };
+      t.medals[i]++;
+      t.pts += POINTS[i];
+      tally.set(name, t);
+    });
+  }
+  const rows = [...tally.values()].sort((a, b) =>
+    b.pts - a.pts || b.medals[0] - a.medals[0] || b.medals[1] - a.medals[1] ||
+    b.medals[2] - a.medals[2] || a.name.localeCompare(b.name));
+  const box = $("#racerBoard");
+  if (!rows.length) { box.className = "msg"; box.textContent = "No podium finishes yet."; return; }
+  const t = el("table"), hr = el("tr");
+  hr.append(el("th", "Racer"));
+  ["1st", "2nd", "3rd"].forEach((label, i) => {
+    const th = el("th");
+    th.append(el("span", MEDALS[i]), el("small", label));
+    hr.append(th);
+  });
+  const pth = el("th", "Pts");
+  pth.title = "Total points: " + POINTS.join(" / ") + " for 1st / 2nd / 3rd";
+  hr.append(pth);
+  const thead = el("thead"); thead.append(hr); t.append(thead);
+  const tb = el("tbody");
+  for (const r of rows) {
+    const tr = el("tr"), name = el("td", r.name);
+    name.title = r.name;
+    tr.append(name, el("td", r.medals[0]), el("td", r.medals[1]), el("td", r.medals[2]), el("td", r.pts, "p"));
+    tb.append(tr);
+  }
+  t.append(tb);
+  box.className = ""; box.replaceChildren(t);
 }
 async function getJSON(path) {
   const r = await fetch(path + "?t=" + Date.now());
@@ -103,7 +163,7 @@ async function select(map) {
   const champ = $("#champ"), board = $("#board");
   champ.replaceChildren();
   try {
-    const d = await getJSON("data/" + entry.file);
+    const d = await loadMap(entry);
     const recs = d.records || [];
     champ.append(el("h2", map));
     if (!recs.length) { board.className = "msg"; board.textContent = "No completions yet. Type race in game to set the first record."; return; }
@@ -115,9 +175,9 @@ async function select(map) {
     th.append(hr);
     t.append(th);
     const tb = el("tbody");
-    for (const r of recs) {
+    for (const [i, r] of recs.entries()) {
       const tr = el("tr");
-      tr.append(el("td", r.rank), el("td", r.racer), el("td", r["class"]), el("td", fmt(r.time), "r"), el("td", r.split > 0 ? fmt(r.split) : "–", "r"), el("td", r.date));
+      tr.append(el("td", r.rank + (MEDALS[i] ? " " + MEDALS[i] : "")), el("td", r.racer), el("td", r["class"]), el("td", fmt(r.time), "r"), el("td", r.split > 0 ? fmt(r.split) : "–", "r"), el("td", r.date));
       tb.append(tr);
     }
     t.append(tb);
@@ -137,6 +197,7 @@ async function refresh(first) {
       current = decodeURIComponent(location.hash.slice(1)) || (newest && newest.map);
     }
     renderList();
+    Promise.allSettled(index.map(loadMap)).then(renderRacers);
     if (current && index.some(m => m.map === current)) await select(current);
     else if (!index.length) $("#board").textContent = "No records yet.";
   } catch (e) {
@@ -146,5 +207,21 @@ async function refresh(first) {
 $("#q").addEventListener("input", renderList);
 refresh(true);
 </script>
+<!-- Default Statcounter code for QWTF Chronicles
+https://qwtf.org/ -->
+<script>
+var sc_project=12881321; 
+var sc_invisible=1; 
+var sc_security="7509a16b"; 
+</script>
+<script src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/12881321/0/7509a16b/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
 </body>
 </html>
