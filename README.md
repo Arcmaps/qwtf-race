@@ -17,4 +17,4 @@ Use normal QuakeWorld Team Fortress binds. Bind 'race' and 'unrace' to start or 
 
 If 'race' is selected before class, Soldier will be chosen by default.
 
-Change map with 'cmd votemap mapname'
+Change map with 'cmd votemap mapname' or the new Map Menu
