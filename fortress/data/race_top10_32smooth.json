@@ -1,0 +1,15 @@
+{
+  "map": "32smooth",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 21.038, "split": 13.173, "class": "Scout", "date": "2026-11-17 16:25"},
+    {"rank": 2, "racer": "arc", "time": 21.127, "split": 13.730, "class": "Scout", "date": "2026-11-18 18:53"},
+    {"rank": 3, "racer": "arc", "time": 21.388, "split": 13.332, "class": "Scout", "date": "2026-11-17 20:19"},
+    {"rank": 4, "racer": "arc", "time": 21.421, "split": 13.382, "class": "Scout", "date": "2026-11-17 20:15"},
+    {"rank": 5, "racer": "arc", "time": 21.651, "split": 13.201, "class": "Scout", "date": "2026-11-17 20:17"},
+    {"rank": 6, "racer": "arc", "time": 21.906, "split": 13.469, "class": "Scout", "date": "2026-11-17 16:24"},
+    {"rank": 7, "racer": "arc", "time": 22.012, "split": 13.575, "class": "Scout", "date": "2026-11-17 20:18"},
+    {"rank": 8, "racer": "arc", "time": 22.050, "split": 13.314, "class": "Scout", "date": "2026-11-17 16:26"},
+    {"rank": 9, "racer": "[r3m]bill", "time": 22.265, "split": 14.062, "class": "Scout", "date": "2026-11-19 07:30"},
+    {"rank": 10, "racer": "arc", "time": 22.473, "split": 13.789, "class": "Scout", "date": "2026-11-17 16:23"}
+  ]
+}

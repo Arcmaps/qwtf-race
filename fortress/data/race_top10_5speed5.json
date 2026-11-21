@@ -1,8 +1,15 @@
 {
   "map": "5speed5",
   "records": [
-    {"rank": 1, "racer": "arc", "time": 14.455, "split": 7.084, "class": "Soldier", "date": "2026-11-15 16:29"},
-    {"rank": 2, "racer": "arc", "time": 15.976, "split": 7.474, "class": "Soldier", "date": "2026-11-15 16:28"},
-    {"rank": 3, "racer": "arc", "time": 16.505, "split": 7.522, "class": "Soldier", "date": "2026-11-15 16:27"}
+    {"rank": 1, "racer": "arc", "time": 13.080, "split": 8.036, "class": "Soldier", "date": "2026-11-20 20:23"},
+    {"rank": 2, "racer": "arc", "time": 13.238, "split": 8.051, "class": "Soldier", "date": "2026-11-20 20:17"},
+    {"rank": 3, "racer": "arc", "time": 13.387, "split": 7.002, "class": "Soldier", "date": "2026-11-17 18:23"},
+    {"rank": 4, "racer": "arc", "time": 13.446, "split": 7.999, "class": "Soldier", "date": "2026-11-20 20:26"},
+    {"rank": 5, "racer": "arc", "time": 14.334, "split": 6.885, "class": "Soldier", "date": "2026-11-17 18:25"},
+    {"rank": 6, "racer": "arc", "time": 14.455, "split": 7.084, "class": "Soldier", "date": "2026-11-15 16:29"},
+    {"rank": 7, "racer": "arc", "time": 14.484, "split": 6.801, "class": "Soldier", "date": "2026-11-17 18:20"},
+    {"rank": 8, "racer": "arc", "time": 14.823, "split": 6.955, "class": "Soldier", "date": "2026-11-17 18:22"},
+    {"rank": 9, "racer": "arc", "time": 15.218, "split": 7.106, "class": "Soldier", "date": "2026-11-17 18:20"},
+    {"rank": 10, "racer": "arc", "time": 15.282, "split": 8.039, "class": "Soldier", "date": "2026-11-20 20:18"}
   ]
 }

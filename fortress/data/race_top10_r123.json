@@ -6,10 +6,10 @@
     {"rank": 3, "racer": "arc", "time": 19.612, "split": 10.083, "class": "Soldier", "date": "2026-11-15 20:00"},
     {"rank": 4, "racer": "arc", "time": 19.724, "split": 10.429, "class": "Soldier", "date": "2026-11-17 12:13"},
     {"rank": 5, "racer": "arc", "time": 19.818, "split": 10.445, "class": "Soldier", "date": "2026-11-15 20:03"},
-    {"rank": 6, "racer": "arc", "time": 20.264, "split": 10.176, "class": "Soldier", "date": "2026-11-15 19:59"},
-    {"rank": 7, "racer": "arc", "time": 20.403, "split": 9.574, "class": "Soldier", "date": "2026-11-15 20:05"},
-    {"rank": 8, "racer": "arc", "time": 21.307, "split": 10.595, "class": "Soldier", "date": "2026-11-17 12:12"},
-    {"rank": 9, "racer": "arc", "time": 21.698, "split": 10.856, "class": "Combat Medic", "date": "2026-11-15 20:00"},
-    {"rank": 10, "racer": "arc", "time": 23.596, "split": 11.219, "class": "Combat Medic", "date": "2026-11-15 20:01"}
+    {"rank": 6, "racer": "[r3m]bill", "time": 20.049, "split": 11.956, "class": "Soldier", "date": "2026-11-19 07:34"},
+    {"rank": 7, "racer": "arc", "time": 20.264, "split": 10.176, "class": "Soldier", "date": "2026-11-15 19:59"},
+    {"rank": 8, "racer": "arc", "time": 20.403, "split": 9.574, "class": "Soldier", "date": "2026-11-15 20:05"},
+    {"rank": 9, "racer": "arc", "time": 21.307, "split": 10.595, "class": "Soldier", "date": "2026-11-17 12:12"},
+    {"rank": 10, "racer": "arc", "time": 21.698, "split": 10.856, "class": "Combat Medic", "date": "2026-11-15 20:00"}
   ]
 }

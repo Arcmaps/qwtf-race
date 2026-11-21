@@ -3,8 +3,11 @@
   "records": [
     {"rank": 1, "racer": "arc", "time": 18.617, "split": 11.051, "class": "Soldier", "date": "2026-11-15 20:10"},
     {"rank": 2, "racer": "arc", "time": 19.101, "split": 12.510, "class": "Soldier", "date": "2026-11-15 20:10"},
-    {"rank": 3, "racer": "arc", "time": 20.688, "split": 12.459, "class": "Soldier", "date": "2026-11-15 20:08"},
-    {"rank": 4, "racer": "arc", "time": 21.118, "split": 13.499, "class": "Soldier", "date": "2026-11-15 20:09"},
-    {"rank": 5, "racer": "arc", "time": 21.151, "split": 14.079, "class": "Soldier", "date": "2026-11-15 20:09"}
+    {"rank": 3, "racer": "[r3m]bill", "time": 19.322, "split": 11.535, "class": "Combat Medic", "date": "2026-11-19 07:30"},
+    {"rank": 4, "racer": "[r3m]bill", "time": 19.474, "split": 13.039, "class": "Combat Medic", "date": "2026-11-19 07:33"},
+    {"rank": 5, "racer": "[r3m]bill", "time": 19.690, "split": 10.422, "class": "Combat Medic", "date": "2026-11-19 07:33"},
+    {"rank": 6, "racer": "arc", "time": 20.688, "split": 12.459, "class": "Soldier", "date": "2026-11-15 20:08"},
+    {"rank": 7, "racer": "arc", "time": 21.118, "split": 13.500, "class": "Soldier", "date": "2026-11-15 20:09"},
+    {"rank": 8, "racer": "arc", "time": 21.151, "split": 14.079, "class": "Soldier", "date": "2026-11-15 20:09"}
   ]
 }
