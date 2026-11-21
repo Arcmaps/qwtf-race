@@ -5,39 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QWTF Live Race Records</title>
 <style>
-:root{color-scheme:dark light;--bg:#1e2329;--panel:#272d35;--sel:#323a44;--line:#3b444f;--text:#e8ecf0;--mute:#9aa5b1;--red:#e0604a;--blue:#5c9be0}
-@media(prefers-color-scheme:light){:root{--bg:#e6e9ed;--panel:#f4f6f8;--sel:#dbe0e6;--line:#c5ccd4;--text:#1d2228;--mute:#5d6874;--red:#b93a26;--blue:#2a69b3}}
+/* Light theme. Cherry red is #b04 (#bb0044) */
+:root{color-scheme:light;--bg:#fff;--soft:#f6f7f9;--sel:#fdeff4;--line:#e5e7eb;--text:#15171c;--mute:#6b7280;--red:#b04;--shadow:0 1px 3px rgba(16,24,40,.07)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Bahnschrift,"DIN Alternate","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Bahnschrift,"DIN Alternate","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;border-top:5px solid var(--red)}
+a{color:var(--red)}
 header,main{max-width:1100px;margin:0 auto;padding:0 24px}
-header{padding-top:32px}
-h1{margin:0;font-size:clamp(28px,5vw,44px);font-weight:600;letter-spacing:-.01em}
-.sub{margin:4px 0 0;color:var(--mute)}
-main{display:grid;grid-template-columns:300px 1fr;gap:24px;margin-top:20px;margin-bottom:48px}
+header{padding-top:36px}
+h1{margin:0;font-size:clamp(30px,5vw,48px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+header h3{margin:10px 0 0;font-size:17px;font-weight:500;color:var(--mute)}
+.sub{margin:6px 0 0;font-size:14px;color:var(--mute)}
+.tabbar{max-width:1100px;margin:24px auto 0;padding:0 24px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line)}
+.tabs button{margin-bottom:-1px;padding:11px 20px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);font:inherit;font-size:17px;font-weight:600;cursor:pointer}
+.tabs button:hover{color:var(--text)}
+.tabs button[aria-selected=true]{color:var(--red);border-bottom-color:var(--red)}
+.tabs small{margin-left:7px;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--mute);font-size:13px;font-weight:600}
+.tabs button[aria-selected=true] small{background:var(--sel);color:var(--red)}
+main{display:grid;grid-template-columns:300px 1fr;gap:28px;margin-top:24px;margin-bottom:56px}
 @media(max-width:760px){main{grid-template-columns:1fr}}
-input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);font:inherit}
-#maps{list-style:none;margin:8px 0 0;padding:0;max-height:68vh;overflow:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+input{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--text);font:inherit}
+input:focus{background:#fff}
+#maps{list-style:none;margin:10px 0 0;padding:0;max-height:68vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow)}
 #maps li+li{border-top:1px solid var(--line)}
-#maps button{display:block;width:100%;padding:10px 12px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
-#maps button:hover{background:var(--sel)}
-#maps button[aria-current=true]{background:var(--sel);box-shadow:inset 3px 0 var(--blue)}
-#maps small{display:block;color:var(--mute)}
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-#champ{padding:4px 0 20px}
-#champ h2{margin:0;font-size:clamp(22px,4vw,30px);font-weight:600}
-#champ .t{margin:0;font-size:clamp(44px,10vw,84px);line-height:1.05;font-weight:600;color:var(--red)}
+#maps button{display:block;width:100%;padding:11px 14px;border:0;background:none;color:inherit;font:inherit;font-weight:600;text-align:left;cursor:pointer}
+#maps button:hover{background:var(--soft)}
+#maps button[aria-current=true]{background:var(--sel);box-shadow:inset 4px 0 var(--red)}
+#maps small{display:block;font-size:14px;font-weight:400;color:var(--mute)}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+#champ{margin-bottom:16px;padding:18px 24px 20px;border:1px solid var(--line);border-left:5px solid var(--red);border-radius:12px;background:#fff;box-shadow:var(--shadow)}
+#champ:empty{display:none}
+#champ h2{margin:0;font-size:clamp(20px,3.5vw,26px);font-weight:700}
+#champ .t{margin:0;font-size:clamp(48px,11vw,92px);line-height:1.05;font-weight:700;letter-spacing:-.02em;color:var(--red)}
 #champ p{margin:0;color:var(--mute)}
-.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse}
-th,td{padding:10px 14px;text-align:left;white-space:nowrap}
-th{font-weight:500;color:var(--mute);border-bottom:1px solid var(--line)}
+th,td{padding:11px 14px;text-align:left;white-space:nowrap}
+th{font-size:14px;font-weight:600;color:var(--mute);background:var(--soft);border-bottom:1px solid var(--line)}
 td+td,th+th{padding-left:20px}
 tbody tr+tr td{border-top:1px solid var(--line)}
-tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
+tbody tr:hover td{background:var(--soft)}
+tbody tr:first-child td{background:var(--sel)}
+tbody tr:first-child td:first-child{box-shadow:inset 4px 0 var(--red)}
 .r{text-align:right}
-.msg{padding:16px;color:var(--mute)}
-#racers{margin-top:16px}
-#racers h3{margin:0 0 8px;font-size:18px;font-weight:600}
+.msg{padding:18px;color:var(--mute)}
+#racers{margin-top:20px}
+#racers h3{margin:0 0 10px;font-size:18px;font-weight:700}
+#racers h3 small{margin-left:6px;font-size:13px;font-weight:500;color:var(--mute)}
 #racers .wrap{max-height:42vh;overflow:auto}
 #racers table{table-layout:fixed;font-size:15px}
 #racers th,#racers td{padding:8px 6px;text-align:center}
@@ -46,7 +60,7 @@ tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
 #racers th:not(:first-child){width:50px}
 #racers th span{display:block;font-size:18px}
 #racers th small{font-size:12px;font-weight:500}
-#racers td.p{font-weight:600}
+#racers td.p{font-weight:700}
 </style>
 </head>
 <body>
@@ -55,12 +69,13 @@ tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
   <h3>Compete: Open <a href="https://github.com/FortressOne/fte-config/releases/" target="_blank">FortressOne</a>, join the QWTF Live Race server</h3>
   <p class="sub" id="stamp">Loading records…</p>
 </header>
+<div class="tabbar"><div class="tabs" id="tabs" role="tablist" aria-label="Race mode"></div></div>
 <main>
   <nav>
     <input id="q" type="search" placeholder="Find a map" aria-label="Find a map" autocomplete="off">
     <ul id="maps"></ul>
     <section id="racers" aria-label="Top racers">
-      <h3>Top racers</h3>
+      <h3>Top racers <small>all modes</small></h3>
       <div class="wrap"><div id="racerBoard" class="msg">Loading racers…</div></div>
     </section>
   </nav>
@@ -71,7 +86,13 @@ tbody tr:first-child td:first-child{box-shadow:inset 3px 0 var(--red)}
 </main>
 <script>
 const $ = s => document.querySelector(s);
-let index = [], current = null;
+let index = [], current = null, mode = "cap";
+const MODES = [
+  { id: "cap", label: "Capture", hint: "mode_cap" },
+  { id: "touch", label: "Touch", hint: "mode_touch" },
+  { id: "press", label: "Press", hint: "mode_press" }
+];
+const lastMap = {};   // remembers the selected map per mode
 const MEDALS = ["🥇", "🥈", "🥉"];
 const POINTS = [3, 2, 1];   // points for 1st, 2nd, 3rd place on a map
 const pending = {}, done = {};
@@ -94,12 +115,12 @@ function ago(iso) {
   return Math.round(sec / 86400) + " days ago";
 }
 function loadMap(entry) {
-  return pending[entry.map] || (pending[entry.map] = getJSON("data/" + entry.file).then(d => (done[entry.map] = d)));
+  return pending[entry.file] || (pending[entry.file] = getJSON("data/" + entry.file).then(d => (done[entry.file] = d)));
 }
 function renderRacers() {
   const tally = new Map();
   for (const m of index) {
-    const d = done[m.map];
+    const d = done[m.file];
     if (!d) continue;
     (d.records || []).slice(0, 3).forEach((r, i) => {
       const name = String(r.racer);
@@ -145,7 +166,7 @@ function renderList() {
   const term = $("#q").value.trim().toLowerCase();
   const ul = $("#maps");
   ul.replaceChildren();
-  const shown = index.filter(m => m.map.toLowerCase().includes(term));
+  const shown = index.filter(m => m.mode === mode && m.map.toLowerCase().includes(term));
   if (!shown.length) { const li = el("li", "No maps match.", "msg"); ul.append(li); return; }
   for (const m of shown) {
     const b = el("button", m.map);
@@ -156,13 +177,61 @@ function renderList() {
   }
 }
 
+function modeOf(file) {
+  return /_touch\.json$/.test(file) ? "touch" : /_press\.json$/.test(file) ? "press" : "cap";
+}
+function inMode(id) { return index.filter(m => m.mode === id); }
+function newest(list) {
+  return list.slice().sort((a, b) => new Date(b.updated) - new Date(a.updated))[0];
+}
+function parseHash() {
+  let h = "";
+  try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+  const m = /^(cap|touch|press)\/(.*)$/.exec(h);
+  return m ? { mode: m[1], map: m[2] } : { mode: "cap", map: h };
+}
+function setHash(map) {
+  const h = (mode === "cap" ? "" : mode + "/") + (map ? encodeURIComponent(map) : "");
+  history.replaceState(null, "", location.pathname + location.search + (h ? "#" + h : ""));
+}
+function renderTabs() {
+  const box = $("#tabs");
+  box.replaceChildren();
+  for (const md of MODES) {
+    const b = el("button", md.label);
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", md.id === mode ? "true" : "false");
+    b.append(el("small", String(inMode(md.id).length)));
+    b.onclick = () => setMode(md.id);
+    box.append(b);
+  }
+}
+async function setMode(id) {
+  if (id === mode) return;
+  mode = id;
+  renderTabs();
+  const list = inMode(mode);
+  const keep = lastMap[mode] && list.some(m => m.map === lastMap[mode]) ? lastMap[mode] : null;
+  const pick = keep || (newest(list) || {}).map;
+  await select(pick);
+}
+
 async function select(map) {
   current = map;
-  history.replaceState(null, "", "#" + encodeURIComponent(map));
+  if (map) lastMap[mode] = map;
+  setHash(map);
   renderList();
-  const entry = index.find(m => m.map === map);
   const champ = $("#champ"), board = $("#board");
   champ.replaceChildren();
+  const entry = map && index.find(m => m.mode === mode && m.map === map);
+  if (!entry) {
+    const md = MODES.find(x => x.id === mode);
+    board.className = "msg";
+    board.textContent = inMode(mode).length ? "Pick a map."
+      : "No " + md.label + " records yet." + (mode === "cap" ? "" : " In game, type " + md.hint + " to switch the server to " + md.label + " mode, then race.");
+    return;
+  }
+  const showSplit = mode === "cap";   // touch and press runs have no flag split
   try {
     const d = await loadMap(entry);
     const recs = d.records || [];
@@ -171,14 +240,17 @@ async function select(map) {
     champ.append(el("p", fmt(recs[0].time), "t"), el("p", recs[0].racer + " as " + recs[0].class + ", set " + ago(entry.updated)));
     const t = el("table");
     const hr = el("tr");
-    for (const h of ["#", "Racer", "Class", "Time", "Flag", "Date"]) hr.append(el("th", h, h === "Time" || h === "Flag" ? "r" : ""));
+    const heads = ["#", "Racer", "Class", "Time"].concat(showSplit ? ["Flag"] : [], ["Date"]);
+    for (const h of heads) hr.append(el("th", h, h === "Time" || h === "Flag" ? "r" : ""));
     const th = el("thead");
     th.append(hr);
     t.append(th);
     const tb = el("tbody");
     for (const [i, r] of recs.entries()) {
       const tr = el("tr");
-      tr.append(el("td", r.rank + (MEDALS[i] ? " " + MEDALS[i] : "")), el("td", r.racer), el("td", r["class"]), el("td", fmt(r.time), "r"), el("td", r.split > 0 ? fmt(r.split) : "–", "r"), el("td", r.date));
+      tr.append(el("td", r.rank + (MEDALS[i] ? " " + MEDALS[i] : "")), el("td", r.racer), el("td", r["class"]), el("td", fmt(r.time), "r"));
+      if (showSplit) tr.append(el("td", r.split > 0 ? fmt(r.split) : "\u2013", "r"));
+      tr.append(el("td", r.date));
       tb.append(tr);
     }
     t.append(tb);
@@ -191,16 +263,18 @@ async function select(map) {
 async function refresh(first) {
   try {
     const d = await getJSON("data/index.json");
-    index = (d.maps || []).slice().sort((a, b) => a.map.localeCompare(b.map, undefined, { numeric: true, sensitivity: "base" }));
-    $("#stamp").textContent = index.length + " maps with records";
+    index = (d.maps || [])
+      .map(m => Object.assign({}, m, { mode: m.mode || modeOf(m.file) }))
+      .sort((a, b) => a.map.localeCompare(b.map, undefined, { numeric: true, sensitivity: "base" }));
+    $("#stamp").textContent = new Set(index.map(m => m.map)).size + " maps with records";
     if (first) {
-      const newest = index.slice().sort((a, b) => new Date(b.updated) - new Date(a.updated))[0];
-      current = decodeURIComponent(location.hash.slice(1)) || (newest && newest.map);
+      const h = parseHash();
+      mode = h.mode;
+      current = h.map || (newest(inMode(mode)) || {}).map;
     }
-    renderList();
+    renderTabs();
     Promise.allSettled(index.map(loadMap)).then(renderRacers);
-    if (current && index.some(m => m.map === current)) await select(current);
-    else if (!index.length) $("#board").textContent = "No records yet.";
+    await select(current);
   } catch (e) {
     $("#stamp").textContent = "Records are not published yet. " + e.message;
   }

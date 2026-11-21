@@ -1,5 +1,5 @@
 {
-    "updated":  "2026-11-21T00:45:19.2313122Z",
+    "updated":  "2026-11-21T07:12:27.7761750Z",
     "maps":  [
                  {
                      "map":  "1on1forts",
@@ -29,9 +29,9 @@
                      "map":  "5speed5",
                      "file":  "race_top10_5speed5.json",
                      "records":  10,
-                     "best":  13.387,
+                     "best":  13.080,
                      "holder":  "arc",
-                     "updated":  "2026-11-18T06:44:56.2462927Z"
+                     "updated":  "2026-11-21T03:26:08.8648750Z"
                  },
                  {
                      "map":  "8-1",
@@ -96,6 +96,30 @@
                      "best":  19.247,
                      "holder":  "arc",
                      "updated":  "2026-11-21T00:44:26.7289091Z"
+                 },
+                 {
+                     "map":  "ff-destroy3",
+                     "file":  "race_top10_ff-destroy3.json",
+                     "records":  1,
+                     "best":  20.773,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T07:11:33.2573812Z"
+                 },
+                 {
+                     "map":  "ff-destroy3",
+                     "file":  "race_top10_ff-destroy3_press.json",
+                     "records":  2,
+                     "best":  10.825,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T07:05:55.3325159Z"
+                 },
+                 {
+                     "map":  "ff-destroy3",
+                     "file":  "race_top10_ff-destroy3_touch.json",
+                     "records":  1,
+                     "best":  11.891,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T07:07:05.6026874Z"
                  },
                  {
                      "map":  "ff-phantomr",

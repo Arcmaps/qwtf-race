@@ -1467,11 +1467,16 @@ enum {
 #define STAT_RACE_LAST_TIME     45
 #define STAT_RACE_SPLIT_TIME    46
 #define STAT_RACE_QUEUE_POS     47
+#define STAT_RACE_SUBMODE       48
 
 #define RACE_STATE_NONE         0
 #define RACE_STATE_PRERUN       1
 #define RACE_STATE_COUNTDOWN    2
 #define RACE_STATE_RUNNING      3
+
+#define RACE_SUBMODE_CAP        0
+#define RACE_SUBMODE_TOUCH      1
+#define RACE_SUBMODE_PRESS      2
 
 // Dimensions
 #define DMN_FLASH 1 // when flashed, we set dimension see to this
