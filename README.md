@@ -1,4 +1,4 @@
-QWTF Live Race Server 1.1
+QWTF Live Race Server 1.2
 ====================
 
 The server files here are already compiled and run on Windows. Click run_race_server_win.bat to start the server.
@@ -20,6 +20,12 @@ If 'race' is selected before class, Soldier will be chosen by default.
 Change map with 'cmd votemap mapname' or the new Map Menu
 
 ---------------
+
+Version 1.2
+
+-Added Flag Touch and Button Press modes (in addition to default Capture mode)
+
+-Created Dispenser Drone for fun
 
 Version 1.1
 
