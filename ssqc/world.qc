@@ -351,6 +351,7 @@ void () worldspawn = {
     globalstat(STAT_RACE_BEST_TIME, EV_FLOAT, "race_best_time");
     globalstat(STAT_RACE_LAST_TIME, EV_FLOAT, "race_last_time");
     globalstat(STAT_RACE_SPLIT_TIME, EV_FLOAT, "race_split_time");
+    globalstat(STAT_RACE_SUBMODE, EV_FLOAT, "race_submode");
 
     // Discord login token disabled in Race Mode
     login_required = 0;

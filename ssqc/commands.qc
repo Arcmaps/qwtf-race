@@ -407,6 +407,18 @@ float (string raw, string arg1, string arg2, string arg3) ParseCmds = {
             processedCmd = TRUE;
             Race_Cmd_Queue(self);
             break;
+        case "mode_cap":
+            processedCmd = TRUE;
+            Race_Cmd_SetSubmode(self, RACE_SUBMODE_CAP);
+            break;
+        case "mode_touch":
+            processedCmd = TRUE;
+            Race_Cmd_SetSubmode(self, RACE_SUBMODE_TOUCH);
+            break;
+        case "mode_press":
+            processedCmd = TRUE;
+            Race_Cmd_SetSubmode(self, RACE_SUBMODE_PRESS);
+            break;
         case "say":
         case "say_team":
             if (arg2 == "race" || arg2 == "!race" || arg2 == "/race" || arg2 == "\"race\"" || arg2 == "\"!race\"") {
@@ -417,6 +429,12 @@ float (string raw, string arg1, string arg2, string arg3) ParseCmds = {
                 Race_Cmd_Top10(self);
             } else if (arg2 == "queue" || arg2 == "!queue" || arg2 == "\"queue\"") {
                 Race_Cmd_Queue(self);
+            } else if (arg2 == "mode_cap" || arg2 == "!mode_cap" || arg2 == "\"mode_cap\"") {
+                Race_Cmd_SetSubmode(self, RACE_SUBMODE_CAP);
+            } else if (arg2 == "mode_touch" || arg2 == "!mode_touch" || arg2 == "\"mode_touch\"") {
+                Race_Cmd_SetSubmode(self, RACE_SUBMODE_TOUCH);
+            } else if (arg2 == "mode_press" || arg2 == "!mode_press" || arg2 == "\"mode_press\"") {
+                Race_Cmd_SetSubmode(self, RACE_SUBMODE_PRESS);
             }
             break;
         case "changeteam":

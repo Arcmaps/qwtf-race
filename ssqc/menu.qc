@@ -916,7 +916,7 @@ void (entity player) Menu_Engineer = {
             te = te.chain;
         }
     } else if (player.ammo_cells >= 100) {
-            s_disp = Q"\s[2]\s Build dispenser     \n";
+            s_disp = Q"\s[2]\s Build dispenser drone\n";
     }
 
     if ((player.has_dispenser || player.has_sentry) && !player.has_menutimer) {

@@ -924,7 +924,89 @@ void (entity disp) Dispenser_FindPlayers = {
     }
 }
 
+static void () Race_DispenserDroneThink = {
+    self.movetype = MOVETYPE_FLY;
+    self.flags &= ~FL_ONGROUND;
+
+    // 1. Gentle drone hover height (~38..50 units off floor, staying clear of ceilings/walls)
+    traceline(self.origin, self.origin - '0 0 128', TRUE, self);
+    float floor_dist = trace_fraction * 128;
+
+    traceline(self.origin, self.origin + '0 0 48', TRUE, self);
+    float ceil_dist = trace_fraction * 48;
+
+    float target_h = 44 + sin(time * 2.5) * 6;
+    if (ceil_dist < 34) {
+        target_h = min(target_h, max(16, floor_dist - (34 - ceil_dist)));
+    }
+    float vz = (target_h - floor_dist) * 3.0;
+    if (vz > 80) vz = 80;
+    if (vz < -80) vz = -80;
+
+    // 2. Target the active racer in 360 degrees (sentry-style visibility & range)
+    entity targ = world;
+    if (race_active_racer != world &&
+        !race_active_racer.has_disconnected &&
+        race_active_racer.health > 0 &&
+        race_active_racer.takedamage &&
+        !(race_active_racer.flags & FL_NOTARGET) &&
+        !(race_active_racer.items & IT_INVISIBILITY) &&
+        !IsFeigned(race_active_racer) &&
+        range(race_active_racer) != RANGE_FAR &&
+        visible(race_active_racer)) {
+        targ = race_active_racer;
+    }
+
+    vector hvel = '0 0 0';
+    if (targ != world) {
+        vector to_targ = targ.origin - self.origin;
+        self.angles_y = vectoyaw(to_targ);
+
+        // Gently drift toward the racer if far enough away, checking walls with tracebox
+        vector flat = [to_targ_x, to_targ_y, 0];
+        float fdist = vlen(flat);
+        if (fdist > 180) {
+            vector fdir = normalize(flat);
+            tracebox(self.origin, self.mins, self.maxs, self.origin + fdir * 24, FALSE, self);
+            if (trace_fraction == 1) {
+                hvel = fdir * 70;
+            }
+        }
+
+        // 3. Fire 1 sentry-style rocket every 5 seconds (first shot 5s after built)
+        if (self.ammo_rockets > 0 && time >= self.super_damage_finished) {
+            vector aim_dir = normalize((targ.origin + '0 0 8') - (self.origin + '0 0 16'));
+            FO_Sound(self, CHAN_WEAPON, "weapons/rocket1i.wav", 1, ATTN_NORM);
+
+            newmis = spawn();
+            newmis.owner = self;
+            newmis.movetype = MOVETYPE_FLYMISSILE;
+            newmis.solid = SOLID_BBOX;
+            newmis.velocity = aim_dir * 800;
+            newmis.angles = vectoangles(newmis.velocity);
+            newmis.weapon = DMSG_SENTRYGUN_ROCKET;
+            newmis.touch = T_MissileTouch;
+            newmis.nextthink = time + 5;
+            newmis.think = SUB_Remove;
+            FO_SetModel(newmis, "progs/missile.mdl");
+            setsize(newmis, '0 0 0', '0 0 0');
+            setorigin(newmis, self.origin + aim_dir * 16 + '0 0 16');
+
+            self.ammo_rockets = self.ammo_rockets - 1;
+            self.super_damage_finished = time + 5.0;
+        }
+    }
+
+    self.velocity = [hvel_x, hvel_y, vz];
+    self.nextthink = time + 0.1;
+};
+
 void () DispenserThink = {
+    if (race_mode) {
+        Race_DispenserDroneThink();
+        return;
+    }
+
     CheckBelowBuilding(self);
     Dispenser_AmmoTick(self);
 
@@ -985,20 +1067,26 @@ void () TeamFortress_FinishedBuilding = {
     Menu_Close(self);
     if (oldself.weapon == 1) {
         self.has_dispenser = BUILD_STATE_BUILT;
-        sprint(self, PRINT_HIGH, "You finish building the dispenser\n");
-        teamsprint(self.team_no, self, self.netname);
-        teamsprint(self.team_no, self, " has built a dispenser\n");
+        if (race_mode) {
+            sprint(self, PRINT_HIGH, "You finish building the dispenser drone\n");
+            teamsprint(self.team_no, self, self.netname);
+            teamsprint(self.team_no, self, " has built a dispenser drone\n");
+        } else {
+            sprint(self, PRINT_HIGH, "You finish building the dispenser\n");
+            teamsprint(self.team_no, self, self.netname);
+            teamsprint(self.team_no, self, " has built a dispenser\n");
+        }
         if (!engineer_move)
             self.ammo_cells = self.ammo_cells - ENG_DISPENSER_COST;
         oldself.classname = "building_dispenser";
-        oldself.netname = "dispenser";
+        oldself.netname = race_mode ? "dispenser drone" : "dispenser";
         oldself.blocked = T_Dispenser;
         oldself.touch = T_Dispenser;
-        oldself.max_health = 150;
-        oldself.health = 150;
+        oldself.max_health = race_mode ? 250 : 150;
+        oldself.health = oldself.max_health;
         oldself.disptimer = 1;
         oldself.think = DispenserThink;
-        oldself.nextthink = time + 0.3;
+        oldself.nextthink = time + (race_mode ? 0.1 : 0.3);
         oldself.th_die = Dispenser_Die;
         oldself.mdl = "progs/disp.mdl";
         oldself.team_no = self.team_no;
@@ -1006,12 +1094,18 @@ void () TeamFortress_FinishedBuilding = {
         oldself.colormap = self.colormap;
         oldself.takedamage = DAMAGE_AIM;
         oldself.owner = world;
-        oldself.movetype = MOVETYPE_TOSS;
-        oldself.velocity = '0 0 8';
+        if (race_mode) {
+            oldself.movetype = MOVETYPE_FLY;
+            oldself.velocity = '0 0 40';
+            oldself.super_damage_finished = time + 5.0;
+        } else {
+            oldself.movetype = MOVETYPE_TOSS;
+            oldself.velocity = '0 0 8';
+        }
         oldself.flags = oldself.flags - (oldself.flags & 512);
         oldself.ammo_shells = ceil(self.ammo_shells * 0.25);
         oldself.ammo_nails = ceil(self.ammo_nails * 0.25);
-        oldself.ammo_rockets = ceil(self.ammo_rockets * 0.25);
+        oldself.ammo_rockets = race_mode ? 99 : ceil(self.ammo_rockets * 0.25);
         oldself.ammo_cells = ceil(self.ammo_cells * 0.25);
         oldself.armorvalue = ceil(self.armorvalue * 0.25);
         self.ammo_shells = ceil(self.ammo_shells * 0.75);

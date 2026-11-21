@@ -793,6 +793,7 @@ float datbits;
 // QWTF Live - Standalone Race Mode Globals, Fields & Prototypes
 // =========================================================================
 float race_mode;
+float race_submode;
 float race_state_global;
 float race_timer_start;
 float race_best_time;
@@ -832,5 +833,7 @@ void (entity pl) Race_Cmd_Top10;
 void (entity pl) Race_Cmd_Queue;
 void (entity pl) Race_OnFlagPickup;
 void (entity pl) Race_OnFlagCapture;
+void (entity pl) Race_OnButtonPress;
+void (entity pl, float newmode) Race_Cmd_SetSubmode;
 void (entity pl) Race_OnPlayerDie;
 void (entity pl) Race_PreThink;

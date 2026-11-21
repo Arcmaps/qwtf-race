@@ -498,7 +498,13 @@ void(PanelID panelid, string text) drawGameModePanel = {
             return;
         }
         if(SBAR.GameMode & GAMEMODE_RACE) {
-            message = "Race Mode";
+            float rsub = getstatf(STAT_RACE_SUBMODE);
+            if (rsub == RACE_SUBMODE_TOUCH)
+                message = "Touch Mode";
+            else if (rsub == RACE_SUBMODE_PRESS)
+                message = "Press Mode";
+            else
+                message = "Cap Mode";
         } else if(SBAR.GameMode & GAMEMODE_VOTE) {
             message = "Vote Mode";
         } else {

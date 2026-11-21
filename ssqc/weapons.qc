@@ -1070,7 +1070,7 @@ void () T_MissileTouch = {
         TF_T_Damage(other, self, self.owner, damg, TF_TD_NOTTEAM,
                     TF_TD_OTHER);
 
-    float dmg = (self.owner.classname == "building_sentrygun") ? 150 : 92;
+    float dmg = (self.owner.classname == "building_sentrygun" || (race_mode && self.owner.classname == "building_dispenser")) ? 150 : 92;
     entity ignore_self = AntilagKnock(self, dmg) ? self.owner : __NULL__;
     T_RadiusDamage(self, self.owner, dmg, other, ignore_self);
 

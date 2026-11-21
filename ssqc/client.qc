@@ -3081,7 +3081,8 @@ void () PlayerPostThink = {
 
     FOPlayer fop = (FOPlayer)self;
     fop.RewindUpdate();
-    Predict_Update(self.team_no > 0 && self.playerclass > 0);
+    if (!race_mode || (time - self.client_lastupdate) < 2.0)
+        Predict_Update(self.team_no > 0 && self.playerclass > 0);
     PlayerPeriodicThink(self.team_no > 0 && self.playerclass > 0);
 };
 

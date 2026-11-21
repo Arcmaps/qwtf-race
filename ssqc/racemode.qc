@@ -33,6 +33,7 @@ static RaceRecord map_records[MAX_RACE_RECORDS];
 static float num_map_records;
 static float race_records_loaded;
 static string race_loaded_map;
+static float race_loaded_submode;
 
 static entity race_cached_goals[MAX_CACHED_GOALS];
 static float num_race_cached_goals;
@@ -86,12 +87,44 @@ string (float sec) Race_FormatTime = {
     return sprintf("%0.3fs", rem);
 };
 
+static string (float sm) Race_SubmodeFileSuffix = {
+    if (sm == RACE_SUBMODE_TOUCH)
+        return "_touch";
+    if (sm == RACE_SUBMODE_PRESS)
+        return "_press";
+    return "";
+};
+
+static string (float sm) Race_SubmodeDisplayName = {
+    if (sm == RACE_SUBMODE_TOUCH)
+        return "Touch Mode";
+    if (sm == RACE_SUBMODE_PRESS)
+        return "Press Mode";
+    return "Cap Mode";
+};
+
+static string (float sm) Race_SubmodeEventType = {
+    if (sm == RACE_SUBMODE_TOUCH)
+        return "race_touch";
+    if (sm == RACE_SUBMODE_PRESS)
+        return "race_press";
+    return "race_capture";
+};
+
+static string (float sm) Race_SubmodeDiscordVerb = {
+    if (sm == RACE_SUBMODE_TOUCH)
+        return "touched the flag in";
+    if (sm == RACE_SUBMODE_PRESS)
+        return "pressed the button in";
+    return "captured the flag in";
+};
+
 static string () Race_RecordFilePath = {
-    return strcat("race_", mapname, ".dat");
+    return strcat("race_", mapname, Race_SubmodeFileSuffix(race_submode), ".dat");
 };
 
 static string () Race_JsonFilePath = {
-    return strcat("race_top10_", mapname, ".json");
+    return strcat("race_top10_", mapname, Race_SubmodeFileSuffix(race_submode), ".json");
 };
 
 static void () Race_SaveRecords = {
@@ -130,7 +163,7 @@ static void () Race_SaveRecords = {
 };
 
 static void () Race_LoadRecords = {
-    if (race_records_loaded && race_loaded_map == mapname && mapname != "")
+    if (race_records_loaded && race_loaded_map == mapname && race_loaded_submode == race_submode && mapname != "")
         return;
 
     for (float k = 0; k < num_map_records; k++) {
@@ -147,6 +180,7 @@ static void () Race_LoadRecords = {
     if (race_loaded_map != "")
         strunzone(race_loaded_map);
     race_loaded_map = strzone(mapname);
+    race_loaded_submode = race_submode;
     race_records_loaded = TRUE;
 
     num_map_records = 0;
@@ -393,6 +427,19 @@ void () Race_ResetMapState = {
             cn == "building_sentrygun_base" ||
             cn == "building_dispenser") {
             dremove(te);
+        } else if (cn == "func_button") {
+            if (te.state != STATE_BOTTOM) {
+                te.state = STATE_BOTTOM;
+                te.velocity = '0 0 0';
+                te.nextthink = 0;
+                te.think = SUB_Null;
+                te.frame = 0;
+                if (te.max_health > 0) {
+                    te.health = te.max_health;
+                    te.takedamage = DAMAGE_YES;
+                }
+                setorigin(te, te.pos1);
+            }
         }
         te = next_e;
     }
@@ -494,6 +541,7 @@ static void (entity pl, float to_back) Race_MakeQueuedSpectator = {
     pl.velocity = '0 0 0';
     pl.maxspeed = SPEC_MAXSPEED;
     pl.csqc_maxspeed = SPEC_MAXSPEED;
+    TeamFortress_SetSpeed(pl);
 
     entity spot = Race_GetBlueSpawn();
     if (spot != world) {
@@ -605,6 +653,9 @@ void (entity pl) Race_OnClientConnect = {
     stuffcmd(pl, "alias top10 \"cmd top10\"\n");
     stuffcmd(pl, "alias records \"cmd top10\"\n");
     stuffcmd(pl, "alias queue \"cmd queue\"\n");
+    stuffcmd(pl, "alias mode_cap \"cmd mode_cap\"\n");
+    stuffcmd(pl, "alias mode_touch \"cmd mode_touch\"\n");
+    stuffcmd(pl, "alias mode_press \"cmd mode_press\"\n");
 };
 
 void (entity pl) Race_OnClientDisconnect = {
@@ -771,6 +822,13 @@ void (entity pl) Race_Cmd_Race = {
     pl.last_playerclass = PC_UNDEFINED;
     Race_SyncPlayerInfokeys(pl, 1, pl.playerclass);
 
+    // Cleanly remove any Engineer buildings/timers before resetting the map
+    entity cleanup_oldself = self;
+    self = pl;
+    TeamFortress_RemoveTimers();
+    Engineer_QuietlyRemoveBuildings(pl);
+    self = cleanup_oldself;
+
     // Reset map and respawn racer cleanly at the fixed Blue spawn for the 3-second countdown
     Race_ResetMapState();
 
@@ -809,6 +867,11 @@ void (entity pl) Race_Cmd_Race = {
 };
 
 static void (entity pl, string reason, float allow_solo_repeat) Race_EndTurn = {
+    entity cleanup_oldself = self;
+    self = pl;
+    TeamFortress_RemoveTimers();
+    Engineer_QuietlyRemoveBuildings(pl);
+    self = cleanup_oldself;
     Race_ResetMapState();
 
     pl.race_state = RACE_STATE_NONE;
@@ -858,7 +921,7 @@ void (entity pl) Race_Cmd_Unrace = {
 };
 
 void (entity pl) Race_Cmd_Top10 = {
-    sprint(pl, PRINT_HIGH, sprintf("\n^4=== TOP 10 RACE RECORDS: %s ===^7\n", mapname));
+    sprint(pl, PRINT_HIGH, sprintf("\n^4=== TOP 10 %s RECORDS: %s ===^7\n", strtoupper(Race_SubmodeDisplayName(race_submode)), mapname));
     if (num_map_records == 0) {
         sprint(pl, PRINT_HIGH, "No completions recorded on this map yet. Type '^2race^7' to set the #1 record!\n\n");
         return;
@@ -900,27 +963,17 @@ void (entity pl) Race_Cmd_Queue = {
     sprint(pl, PRINT_HIGH, "\n");
 };
 
-void (entity pl) Race_OnFlagPickup = {
-    if (!race_mode || pl != race_active_racer || pl.race_state != RACE_STATE_RUNNING)
-        return;
-    if (pl.race_flag_split_time > 0)
-        return;
-
-    pl.race_flag_split_time = max(0.001, time - pl.race_start_time);
-    race_split_time = pl.race_flag_split_time;
-
-    bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s grabbed the enemy flag at ^3%s^7!\n",
-        pl.netname, Race_FormatTime(pl.race_flag_split_time)));
-};
-
-static void (entity pl, float elapsed, float split, float rank, float prev_best) Race_NotifyExternal = {
+static void (entity pl, float elapsed, float split, float rank, float prev_best, float sm) Race_NotifyExternal = {
     string clean_name = clearString(strdecolorize(pl.netname));
     string cls_name = TeamFortress_GetClassName(pl.playerclass);
     string ts = ISOTimemillis();
+    string ev_type = Race_SubmodeEventType(sm);
+    string discord_verb = Race_SubmodeDiscordVerb(sm);
 
     // 1. Emit structured JSON line to server console/log and race_events.jsonl for Discord bot & Web leaderboard
     // Split into <=5-parameter sprintf calls to stay well within QuakeC VM's 8-parameter limit
-    string j1 = sprintf("{\"type\":\"race_capture\",\"map\":\"%s\",\"player\":\"%s\",\"class\":\"%s\",",
+    string j1 = sprintf("{\"type\":\"%s\",\"map\":\"%s\",\"player\":\"%s\",\"class\":\"%s\",",
+        ev_type,
         mapname,
         clean_name,
         cls_name);
@@ -948,18 +1001,19 @@ static void (entity pl, float elapsed, float split, float rank, float prev_best)
     string webhook = infokey(world, "discord_webhook");
     if (webhook != string_null && webhook != "" && rank == 1) {
         string delta_msg = (prev_best > 0) ? sprintf(" (beat previous record of %s by -%0.3fs!)", Race_FormatTime(prev_best), prev_best - elapsed) : " (first record on map!)";
-        string payload = sprintf("{\"content\": \"[NEW MAP RECORD on `%s`!] **%s** (%s) captured the flag in **%s**%s\"}",
-            mapname, clean_name, cls_name, Race_FormatTime(elapsed), delta_msg);
-        uri_post(webhook, TFL_RESULT, "application/json", payload);
+        string payload_a = sprintf("{\"content\": \"[NEW MAP RECORD on `%s`!] **%s** (%s) %s ",
+            mapname, clean_name, cls_name, discord_verb);
+        string payload_b = sprintf("**%s**%s\"}", Race_FormatTime(elapsed), delta_msg);
+        uri_post(webhook, TFL_RESULT, "application/json", strcat(payload_a, payload_b));
     }
 };
 
-void (entity pl) Race_OnFlagCapture = {
+static void (entity pl, float sm) Race_CompleteRun = {
     if (!race_mode || pl != race_active_racer || pl.race_state != RACE_STATE_RUNNING)
         return;
 
     float elapsed = max(0.001, time - pl.race_start_time);
-    float split = pl.race_flag_split_time;
+    float split = (sm == RACE_SUBMODE_CAP) ? pl.race_flag_split_time : 0;
     float prev_map_best = race_best_time;
     float prev_pb = pl.race_best_personal;
 
@@ -970,30 +1024,100 @@ void (entity pl) Race_OnFlagCapture = {
 
     float rank = Race_InsertRecord(pl, elapsed, split);
 
+    string action_verb = "captured";
+    string banner_label = "CAPTURE TIME:";
+    if (sm == RACE_SUBMODE_TOUCH) {
+        action_verb = "touched the flag";
+        banner_label = "TOUCH TIME:";
+    } else if (sm == RACE_SUBMODE_PRESS) {
+        action_verb = "pressed the button";
+        banner_label = "PRESS TIME:";
+    }
+
     string split_info = (split > 0) ? sprintf(" [Flag Split: %s | Return: %s]", Race_FormatTime(split), Race_FormatTime(max(0.001, elapsed - split))) : "";
     bprint(PRINT_HIGH, "\n^4================================================^7\n");
     if (rank == 1) {
         string diff_str = (prev_map_best > 0) ? sprintf(" ^2(-%0.3fs!)^7", prev_map_best - elapsed) : "";
-        bprint(PRINT_HIGH, sprintf("^3*** NEW MAP RECORD ON %s! ***^7\n", strtoupper(mapname)));
-        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) captured in ^2%s^7%s%s\n",
-            pl.netname, TeamFortress_GetClassName(pl.playerclass), Race_FormatTime(elapsed), diff_str, split_info));
+        bprint(PRINT_HIGH, sprintf("^3*** NEW %s RECORD ON %s! ***^7\n", strtoupper(Race_SubmodeDisplayName(sm)), strtoupper(mapname)));
+        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) %s in ^2%s^7%s%s\n",
+            pl.netname, TeamFortress_GetClassName(pl.playerclass), action_verb, Race_FormatTime(elapsed), diff_str, split_info));
         stuffcmd(pl, "play misc/power.wav\n");
     } else if (rank > 1 && rank <= 10) {
-        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) captured in ^2%s^7 -- ^3#%d Top 10 Time on %s!^7%s\n",
-            pl.netname, TeamFortress_GetClassName(pl.playerclass), Race_FormatTime(elapsed), rank, mapname, split_info));
+        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) %s in ^2%s^7 -- ^3#%d Top 10 Time on %s!^7%s\n",
+            pl.netname, TeamFortress_GetClassName(pl.playerclass), action_verb, Race_FormatTime(elapsed), rank, mapname, split_info));
     } else {
-        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) captured in ^2%s^7!%s\n",
-            pl.netname, TeamFortress_GetClassName(pl.playerclass), Race_FormatTime(elapsed), split_info));
+        bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s (%s) %s in ^2%s^7!%s\n",
+            pl.netname, TeamFortress_GetClassName(pl.playerclass), action_verb, Race_FormatTime(elapsed), split_info));
     }
     bprint(PRINT_HIGH, "^4================================================^7\n\n");
 
     string rank_banner = (rank == 1) ? "\sNEW MAP RECORD (#1)!\s" : ((rank > 0) ? sprintf("Map Rank: #%d", rank) : "");
-    CenterPrint(pl, strcat("\n\n\bCAPTURE TIME:\b ", Race_FormatTime(elapsed), "\n", rank_banner, "\n"));
+    CenterPrint(pl, strcat("\n\n\b", banner_label, "\b ", Race_FormatTime(elapsed), "\n", rank_banner, "\n"));
 
-    Race_NotifyExternal(pl, elapsed, split, rank, prev_map_best);
+    Race_NotifyExternal(pl, elapsed, split, rank, prev_map_best, sm);
 
     // Complete turn and rotate queue (or start new 15s prerun if solo)
     Race_EndTurn(pl, "completed run", TRUE);
+};
+
+void (entity pl) Race_OnFlagPickup = {
+    if (!race_mode || pl != race_active_racer || pl.race_state != RACE_STATE_RUNNING)
+        return;
+
+    if (race_submode == RACE_SUBMODE_TOUCH) {
+        Race_CompleteRun(pl, RACE_SUBMODE_TOUCH);
+        return;
+    }
+
+    if (race_submode != RACE_SUBMODE_CAP)
+        return;
+
+    if (pl.race_flag_split_time > 0)
+        return;
+
+    pl.race_flag_split_time = max(0.001, time - pl.race_start_time);
+    race_split_time = pl.race_flag_split_time;
+
+    bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s grabbed the enemy flag at ^3%s^7!\n",
+        pl.netname, Race_FormatTime(pl.race_flag_split_time)));
+};
+
+void (entity pl) Race_OnFlagCapture = {
+    if (!race_mode || race_submode != RACE_SUBMODE_CAP)
+        return;
+    Race_CompleteRun(pl, RACE_SUBMODE_CAP);
+};
+
+void (entity pl) Race_OnButtonPress = {
+    if (!race_mode || race_submode != RACE_SUBMODE_PRESS)
+        return;
+    Race_CompleteRun(pl, RACE_SUBMODE_PRESS);
+};
+
+void (entity pl, float newmode) Race_Cmd_SetSubmode = {
+    if (newmode != RACE_SUBMODE_CAP && newmode != RACE_SUBMODE_TOUCH && newmode != RACE_SUBMODE_PRESS)
+        newmode = RACE_SUBMODE_CAP;
+
+    if (race_submode == newmode) {
+        sprint(pl, PRINT_HIGH, sprintf("^4[RACE]^7 Already in ^2%s^7.\n", Race_SubmodeDisplayName(newmode)));
+        return;
+    }
+
+    race_submode = newmode;
+    localcmd(strcat("localinfo race_submode ", ftos(newmode), "\n"));
+
+    race_last_time = 0;
+    race_split_time = 0;
+    race_records_loaded = FALSE;
+    Race_LoadRecords();
+
+    bprint(PRINT_HIGH, sprintf("^4[RACE]^7 %s switched race mode to ^2%s^7!\n",
+        pl.netname, Race_SubmodeDisplayName(newmode)));
+
+    if (race_active_racer != world &&
+        (race_active_racer.race_state == RACE_STATE_RUNNING || race_active_racer.race_state == RACE_STATE_COUNTDOWN)) {
+        Race_EndTurn(race_active_racer, "mode changed", TRUE);
+    }
 };
 
 void (entity pl) Race_OnPlayerDie = {
@@ -1010,8 +1134,11 @@ void (entity pl) Race_OnPlayerDie = {
 void (entity pl) Race_PreThink = {
     if (pl != race_active_racer) {
         // Queued spectator: ensure they cannot touch triggers/items or take damage
-        if (pl.team_no != 0 || pl.solid != SOLID_NOT) {
+        if (pl.team_no != 0 || pl.solid != SOLID_NOT || pl.movetype != MOVETYPE_NOCLIP) {
             Race_MakeQueuedSpectator(pl, FALSE);
+        } else if (pl.csqc_maxspeed <= 0 || (pl.tfstate & TFSTATE_CANT_MOVE)) {
+            pl.tfstate &= ~TFSTATE_CANT_MOVE;
+            TeamFortress_SetSpeed(pl);
         }
         return;
     }
@@ -1132,6 +1259,11 @@ void () Race_Controller_Think = {
 
 void () Race_Init = {
     race_mode = 1;
+    float saved_sm = stof(infokey(world, "race_submode"));
+    if (saved_sm == RACE_SUBMODE_TOUCH || saved_sm == RACE_SUBMODE_PRESS)
+        race_submode = saved_sm;
+    else
+        race_submode = RACE_SUBMODE_CAP;
     clanbattle = 0;
     quadmode = 0;
     duelmode = 0;

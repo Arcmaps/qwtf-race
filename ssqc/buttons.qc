@@ -43,6 +43,10 @@ void () button_fire = {
     if ((self.state == STATE_UP) || (self.state == STATE_TOP))
         return;
 
+    if (race_mode && race_submode == RACE_SUBMODE_PRESS && self.enemy != world && self.enemy.classname == "player") {
+        Race_OnButtonPress(self.enemy);
+    }
+
     // q3f support
     string targname;
     entity targ;

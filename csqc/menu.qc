@@ -74,6 +74,19 @@ static string qwtf_live = "^7QWTF^8.^1LIVE ^4RACE";
 
 fo_menu_option MenuSpacer = {"","","","",FO_MENU_STATE_SPACER};
 
+void TF_Menu_Game(float force, float first = FALSE);
+void TF_Menu_RaceMode(float force);
+
+var fo_menu FO_MENU_RACE_MODE = {
+    [0,0], [300,200], "Select Race Mode", FO_MENU_FLAG_USE_MOUSE | FO_MENU_FLAG_CENTER | FO_MENU_FLAG_SHOW_SHORTCUTS | FO_MENU_FLAG_ALLOW_INTERMISSION, {
+        {"1","Cap Mode","","Flag capture race (default)",FO_MENU_STATE_NORMAL,{localcmd("cmd mode_cap\n"); Menu_Cancel();},MENU_BUTTON},
+        {"2","Touch Mode","","Flag touch race (touch flag as fast as possible)",FO_MENU_STATE_NORMAL,{localcmd("cmd mode_touch\n"); Menu_Cancel();},MENU_BUTTON},
+        {"3","Press Mode","","Button press race (press func_button as fast as possible)",FO_MENU_STATE_NORMAL,{localcmd("cmd mode_press\n"); Menu_Cancel();},MENU_BUTTON},
+        MenuSpacer,
+        {"0","Back","","Return to game menu",FO_MENU_STATE_NORMAL,{TF_Menu_Game(TRUE);},MENU_BUTTON},
+    }, 5, TRUE
+};
+
 var fo_menu FO_MENU_GAME = {
     [0,0], [300,200], qwtf_live, FO_MENU_FLAG_USE_MOUSE | FO_MENU_FLAG_CENTER | FO_MENU_FLAG_SHOW_SHORTCUTS | FO_MENU_FLAG_ALLOW_INTERMISSION, {
         {"1","Start Race (race)", "","Start 3-second race countdown at Blue spawn",FO_MENU_STATE_NORMAL,{localcmd("cmd race\n"); Menu_Cancel(); },MENU_BUTTON},
@@ -84,9 +97,10 @@ var fo_menu FO_MENU_GAME = {
         {"5","Server Admin", "","Admin options for the server",FO_MENU_STATE_DISABLED,{TF_Menu_Admin_Main(TRUE);},MENU_BUTTON},
         {"6","Race Queue", "","View current racer and waiting queue",FO_MENU_STATE_NORMAL,{localcmd("cmd queue\n"); Menu_Cancel();},MENU_BUTTON},
         {"7","Map Menu", "","",FO_MENU_STATE_NORMAL,{showVoteMenu(TRUE);},MENU_BUTTON},
+        {"8","Race Mode", "","Switch between Cap, Touch, and Press modes",FO_MENU_STATE_NORMAL,{TF_Menu_RaceMode(TRUE);},MENU_BUTTON},
         MenuSpacer,
         {"0","Main Menu","","",FO_MENU_STATE_NORMAL,{localcmd("tf_menu main\n"); Menu_Cancel();},MENU_BUTTON},
-    }, 10, TRUE
+    }, 11, TRUE
 };
 var fo_menu FO_MENU_GAME_SPECTATOR = {
     [0,0], [300,200], qwtf_live, FO_MENU_FLAG_USE_MOUSE | FO_MENU_FLAG_CENTER | FO_MENU_FLAG_SHOW_SHORTCUTS | FO_MENU_FLAG_ALLOW_INTERMISSION, {
@@ -264,7 +278,7 @@ var fo_menu FO_MENU_BUILD_CANCEL = {
 var fo_menu FO_MENU_BUILD = {
     [0,0], [300,200], "Engineering", FO_MENU_FLAG_CENTER | FO_MENU_FLAG_SHOW_SHORTCUTS, {
         {"1","Build Sentry Gun","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build sentry\n");Menu_Cancel();},MENU_BUTTON},
-        {"2","Build Dispenser","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build dispenser\n");Menu_Cancel();},MENU_BUTTON},
+        {"2","Build Dispenser Drone","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build dispenser\n");Menu_Cancel();},MENU_BUTTON},
         {"3","Destroy Sentry Gun","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build destroy sentry\n");Menu_Cancel();},MENU_BUTTON},
         {"3","Dismantle Sentry Gun","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build destroy sentry\n");Menu_Cancel();},MENU_BUTTON},
         {"4","Destroy Dispenser","","",FO_MENU_STATE_NORMAL,{localcmd("cmd build destroy dispenser\n");Menu_Cancel();},MENU_BUTTON},
@@ -878,11 +892,18 @@ void TF_Menu_Game(float force, float first = FALSE) = {
         
         //FO_MENU_GAME.num_opts = 7;
         FO_MENU_GAME.options[5].state = is_admin?FO_MENU_STATE_NORMAL:FO_MENU_STATE_DISABLED;
-        //if(is_admin) FO_MENU_GAME.num_opts++;
-        FO_MENU_GAME.options[6].state = (userid == captain1 || userid == captain2)?FO_MENU_STATE_NORMAL:FO_MENU_STATE_DISABLED;
-        //if(is_admin) FO_MENU_GAME.num_opts++;
+        FO_MENU_GAME.options[6].state = FO_MENU_STATE_NORMAL;
         CurrentMenu = &FO_MENU_GAME;
     }
+    fo_hud_menu_active = TRUE;
+}
+
+void TF_Menu_RaceMode(float force) = {
+    if (fo_hud_menu_active && CurrentMenu == &FO_MENU_RACE_MODE && !force) {
+        Menu_Cancel();
+        return;
+    }
+    CurrentMenu = &FO_MENU_RACE_MODE;
     fo_hud_menu_active = TRUE;
 }
 
@@ -1338,6 +1359,7 @@ void FO_Hud_Init() {
 
     /* DrawPanel = *getHudPanel(HUDP_OPTIONS);  // XXX */
     INIT_MENU_IDS(FO_MENU_GAME);
+    INIT_MENU_IDS(FO_MENU_RACE_MODE);
     INIT_MENU_IDS(FO_MENU_GAME_SPECTATOR);
     INIT_MENU_IDS(FO_MENU_SPECTATOR_TRACK);
     INIT_MENU_IDS(FO_MENU_TEAM);
