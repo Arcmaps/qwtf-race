@@ -1,0 +1,13 @@
+{
+  "map": "ff-phantomr",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 17.544, "split": 9.332, "class": "Soldier", "date": "2026-11-18 10:15"},
+    {"rank": 2, "racer": "arc", "time": 17.547, "split": 9.890, "class": "Soldier", "date": "2026-11-18 10:12"},
+    {"rank": 3, "racer": "arc", "time": 17.661, "split": 9.484, "class": "Soldier", "date": "2026-11-18 10:08"},
+    {"rank": 4, "racer": "arc", "time": 17.788, "split": 9.507, "class": "Soldier", "date": "2026-11-18 10:13"},
+    {"rank": 5, "racer": "arc", "time": 17.919, "split": 9.690, "class": "Soldier", "date": "2026-11-18 10:09"},
+    {"rank": 6, "racer": "arc", "time": 18.310, "split": 9.067, "class": "Soldier", "date": "2026-11-18 10:06"},
+    {"rank": 7, "racer": "arc", "time": 18.658, "split": 10.091, "class": "Soldier", "date": "2026-11-18 10:06"},
+    {"rank": 8, "racer": "arc", "time": 18.673, "split": 9.937, "class": "Soldier", "date": "2026-11-18 10:11"}
+  ]
+}

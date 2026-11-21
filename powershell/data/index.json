@@ -1,6 +1,14 @@
 {
-    "updated":  "2026-11-17T02:58:16.4978089Z",
+    "updated":  "2026-11-21T00:45:19.2313122Z",
     "maps":  [
+                 {
+                     "map":  "1on1forts",
+                     "file":  "race_top10_1on1forts.json",
+                     "records":  3,
+                     "best":  9.453,
+                     "holder":  "arc",
+                     "updated":  "2026-11-17T04:55:19.1328306Z"
+                 },
                  {
                      "map":  "2farms",
                      "file":  "race_top10_2farms.json",
@@ -10,20 +18,44 @@
                      "updated":  "2026-11-16T06:51:02.3527569Z"
                  },
                  {
+                     "map":  "32smooth",
+                     "file":  "race_top10_32smooth.json",
+                     "records":  10,
+                     "best":  21.038,
+                     "holder":  "arc",
+                     "updated":  "2026-11-19T14:30:00.6695422Z"
+                 },
+                 {
                      "map":  "5speed5",
                      "file":  "race_top10_5speed5.json",
-                     "records":  3,
-                     "best":  14.455,
+                     "records":  10,
+                     "best":  13.387,
                      "holder":  "arc",
-                     "updated":  "2026-11-15T23:29:57.8849812Z"
+                     "updated":  "2026-11-18T06:44:56.2462927Z"
                  },
                  {
                      "map":  "8-1",
                      "file":  "race_top10_8-1.json",
-                     "records":  4,
-                     "best":  18.597,
+                     "records":  10,
+                     "best":  15.542,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-20T12:47:30.0254227Z"
+                 },
+                 {
+                     "map":  "alchemy",
+                     "file":  "race_top10_alchemy.json",
+                     "records":  10,
+                     "best":  14.580,
                      "holder":  "arc",
-                     "updated":  "2026-11-17T02:37:54.3578635Z"
+                     "updated":  "2026-11-17T04:42:36.4913246Z"
+                 },
+                 {
+                     "map":  "desperat",
+                     "file":  "race_top10_desperat.json",
+                     "records":  10,
+                     "best":  9.500,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-19T14:36:00.6276471Z"
                  },
                  {
                      "map":  "disorder",
@@ -37,41 +69,57 @@
                      "map":  "dragongod2",
                      "file":  "race_top10_dragongod2.json",
                      "records":  10,
-                     "best":  18.437,
+                     "best":  16.582,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T07:48:15.0197559Z"
+                     "updated":  "2026-11-20T01:02:23.0571110Z"
                  },
                  {
                      "map":  "egypt3",
                      "file":  "race_top10_egypt3.json",
                      "records":  10,
-                     "best":  15.003,
+                     "best":  14.331,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T22:22:44.5674593Z"
+                     "updated":  "2026-11-18T04:29:30.4973615Z"
                  },
                  {
                      "map":  "etf_xpress",
                      "file":  "race_top10_etf_xpress.json",
                      "records":  10,
-                     "best":  10.386,
+                     "best":  10.014,
                      "holder":  "arc",
-                     "updated":  "2026-11-17T02:33:55.8094649Z"
+                     "updated":  "2026-11-19T03:26:37.8816700Z"
                  },
                  {
                      "map":  "excel3",
                      "file":  "race_top10_excel3.json",
-                     "records":  8,
-                     "best":  20.293,
+                     "records":  10,
+                     "best":  19.247,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T08:09:09.0044916Z"
+                     "updated":  "2026-11-21T00:44:26.7289091Z"
+                 },
+                 {
+                     "map":  "ff-phantomr",
+                     "file":  "race_top10_ff-phantomr.json",
+                     "records":  8,
+                     "best":  17.544,
+                     "holder":  "arc",
+                     "updated":  "2026-11-18T17:15:37.6261587Z"
                  },
                  {
                      "map":  "ff-shoop",
                      "file":  "race_top10_ff-shoop.json",
-                     "records":  5,
-                     "best":  13.472,
-                     "holder":  "arc",
-                     "updated":  "2026-11-16T05:30:02.4955389Z"
+                     "records":  9,
+                     "best":  11.553,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-19T14:08:25.9358005Z"
+                 },
+                 {
+                     "map":  "ff-swoop",
+                     "file":  "race_top10_ff-swoop.json",
+                     "records":  2,
+                     "best":  29.351,
+                     "holder":  "shock",
+                     "updated":  "2026-11-20T21:58:29.4485656Z"
                  },
                  {
                      "map":  "genders2",
@@ -82,12 +130,36 @@
                      "updated":  "2026-11-16T16:11:37.0006792Z"
                  },
                  {
+                     "map":  "genders2r",
+                     "file":  "race_top10_genders2r.json",
+                     "records":  5,
+                     "best":  30.731,
+                     "holder":  "arc",
+                     "updated":  "2026-11-17T21:34:50.0075437Z"
+                 },
+                 {
                      "map":  "japanc",
                      "file":  "race_top10_japanc.json",
-                     "records":  5,
-                     "best":  16.359,
+                     "records":  10,
+                     "best":  15.387,
                      "holder":  "arc",
-                     "updated":  "2026-11-17T02:48:05.4468223Z"
+                     "updated":  "2026-11-18T22:20:27.9782743Z"
+                 },
+                 {
+                     "map":  "long",
+                     "file":  "race_top10_long.json",
+                     "records":  8,
+                     "best":  19.410,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T00:22:09.2471996Z"
+                 },
+                 {
+                     "map":  "optics6",
+                     "file":  "race_top10_optics6.json",
+                     "records":  10,
+                     "best":  20.823,
+                     "holder":  "arc",
+                     "updated":  "2026-11-18T07:00:53.8628233Z"
                  },
                  {
                      "map":  "poop",
@@ -98,36 +170,44 @@
                      "updated":  "2026-11-16T06:31:28.4352015Z"
                  },
                  {
+                     "map":  "preskool",
+                     "file":  "race_top10_preskool.json",
+                     "records":  5,
+                     "best":  15.669,
+                     "holder":  "arc",
+                     "updated":  "2026-11-17T18:45:13.2484536Z"
+                 },
+                 {
                      "map":  "qu4d",
                      "file":  "race_top10_qu4d.json",
-                     "records":  6,
-                     "best":  14.448,
-                     "holder":  "arc",
-                     "updated":  "2026-11-16T15:08:56.0984380Z"
+                     "records":  10,
+                     "best":  13.214,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-20T12:49:48.2973199Z"
                  },
                  {
                      "map":  "r123",
                      "file":  "race_top10_r123.json",
-                     "records":  8,
+                     "records":  10,
                      "best":  19.304,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T03:07:05.9903220Z"
+                     "updated":  "2026-11-19T14:34:30.1683227Z"
                  },
                  {
                      "map":  "sunnyramps",
                      "file":  "race_top10_sunnyramps.json",
-                     "records":  5,
+                     "records":  8,
                      "best":  18.617,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T03:10:40.8423843Z"
+                     "updated":  "2026-11-19T14:33:34.0340449Z"
                  },
                  {
                      "map":  "wc3",
                      "file":  "race_top10_wc3.json",
                      "records":  10,
-                     "best":  10.857,
+                     "best":  10.797,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T18:54:39.1315016Z"
+                     "updated":  "2026-11-17T19:09:42.3149864Z"
                  },
                  {
                      "map":  "zelda",

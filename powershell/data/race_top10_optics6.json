@@ -1,0 +1,15 @@
+{
+  "map": "optics6",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 20.823, "split": 11.862, "class": "Combat Medic", "date": "2026-11-17 14:40"},
+    {"rank": 2, "racer": "arc", "time": 22.183, "split": 12.963, "class": "Combat Medic", "date": "2026-11-18 00:00"},
+    {"rank": 3, "racer": "arc", "time": 22.716, "split": 12.329, "class": "Soldier", "date": "2026-11-17 23:51"},
+    {"rank": 4, "racer": "arc", "time": 23.081, "split": 12.880, "class": "Combat Medic", "date": "2026-11-17 14:50"},
+    {"rank": 5, "racer": "arc", "time": 23.262, "split": 12.589, "class": "Soldier", "date": "2026-11-17 23:55"},
+    {"rank": 6, "racer": "arc", "time": 23.424, "split": 13.445, "class": "Combat Medic", "date": "2026-11-17 14:39"},
+    {"rank": 7, "racer": "arc", "time": 23.554, "split": 13.195, "class": "Combat Medic", "date": "2026-11-17 20:25"},
+    {"rank": 8, "racer": "arc", "time": 23.652, "split": 12.990, "class": "Combat Medic", "date": "2026-11-17 20:28"},
+    {"rank": 9, "racer": "arc", "time": 23.715, "split": 12.963, "class": "Combat Medic", "date": "2026-11-17 14:42"},
+    {"rank": 10, "racer": "arc", "time": 23.773, "split": 12.034, "class": "Soldier", "date": "2026-11-17 23:52"}
+  ]
+}

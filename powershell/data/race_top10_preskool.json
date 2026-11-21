@@ -1,0 +1,10 @@
+{
+  "map": "preskool",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 15.669, "split": 9.048, "class": "Soldier", "date": "2026-11-17 11:42"},
+    {"rank": 2, "racer": "arc", "time": 15.780, "split": 8.916, "class": "Soldier", "date": "2026-11-17 11:45"},
+    {"rank": 3, "racer": "arc", "time": 17.093, "split": 9.319, "class": "Soldier", "date": "2026-11-17 11:42"},
+    {"rank": 4, "racer": "arc", "time": 17.946, "split": 8.772, "class": "Soldier", "date": "2026-11-17 11:41"},
+    {"rank": 5, "racer": "arc", "time": 19.002, "split": 8.523, "class": "Soldier", "date": "2026-11-17 11:40"}
+  ]
+}

@@ -1,13 +1,15 @@
 {
   "map": "excel3",
   "records": [
-    {"rank": 1, "racer": "arc", "time": 20.293, "split": 12.324, "class": "Combat Medic", "date": "2026-11-16 01:09"},
-    {"rank": 2, "racer": "arc", "time": 20.343, "split": 12.205, "class": "Combat Medic", "date": "2026-11-16 01:07"},
-    {"rank": 3, "racer": "arc", "time": 20.593, "split": 12.403, "class": "Combat Medic", "date": "2026-11-16 01:03"},
-    {"rank": 4, "racer": "arc", "time": 20.607, "split": 12.456, "class": "Combat Medic", "date": "2026-11-16 01:08"},
-    {"rank": 5, "racer": "arc", "time": 21.244, "split": 12.391, "class": "Combat Medic", "date": "2026-11-16 01:05"},
-    {"rank": 6, "racer": "arc", "time": 21.554, "split": 12.402, "class": "Combat Medic", "date": "2026-11-16 00:58"},
-    {"rank": 7, "racer": "arc", "time": 22.047, "split": 13.077, "class": "Combat Medic", "date": "2026-11-16 01:02"},
-    {"rank": 8, "racer": "arc", "time": 22.609, "split": 12.898, "class": "Combat Medic", "date": "2026-11-16 01:05"}
+    {"rank": 1, "racer": "arc", "time": 19.247, "split": 11.369, "class": "Combat Medic", "date": "2026-11-20 17:43"},
+    {"rank": 2, "racer": "arc", "time": 19.327, "split": 11.787, "class": "Combat Medic", "date": "2026-11-20 17:44"},
+    {"rank": 3, "racer": "arc", "time": 19.579, "split": 11.415, "class": "Combat Medic", "date": "2026-11-20 17:40"},
+    {"rank": 4, "racer": "[r3m]bill", "time": 19.891, "split": 11.584, "class": "Pyro", "date": "2026-11-19 07:21"},
+    {"rank": 5, "racer": "arc", "time": 20.127, "split": 11.950, "class": "Combat Medic", "date": "2026-11-20 17:38"},
+    {"rank": 6, "racer": "arc", "time": 20.293, "split": 12.323, "class": "Combat Medic", "date": "2026-11-16 01:09"},
+    {"rank": 7, "racer": "arc", "time": 20.343, "split": 12.205, "class": "Combat Medic", "date": "2026-11-16 01:07"},
+    {"rank": 8, "racer": "arc", "time": 20.437, "split": 11.636, "class": "Combat Medic", "date": "2026-11-20 17:43"},
+    {"rank": 9, "racer": "arc", "time": 20.534, "split": 11.876, "class": "Combat Medic", "date": "2026-11-20 17:42"},
+    {"rank": 10, "racer": "arc", "time": 20.593, "split": 12.403, "class": "Combat Medic", "date": "2026-11-16 01:03"}
   ]
 }

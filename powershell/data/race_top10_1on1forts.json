@@ -1,0 +1,8 @@
+{
+  "map": "1on1forts",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 9.453, "split": 6.385, "class": "Pyro", "date": "2026-11-16 21:55"},
+    {"rank": 2, "racer": "arc", "time": 9.966, "split": 6.300, "class": "Pyro", "date": "2026-11-16 21:49"},
+    {"rank": 3, "racer": "arc", "time": 11.481, "split": 6.947, "class": "Soldier", "date": "2026-11-16 21:47"}
+  ]
+}
