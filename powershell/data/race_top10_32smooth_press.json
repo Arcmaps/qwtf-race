@@ -1,0 +1,15 @@
+{
+  "map": "32smooth",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 0.796, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:26"},
+    {"rank": 2, "racer": "arc", "time": 0.824, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:26"},
+    {"rank": 3, "racer": "arc", "time": 0.828, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:27"},
+    {"rank": 4, "racer": "arc", "time": 0.832, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:27"},
+    {"rank": 5, "racer": "arc", "time": 0.834, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:27"},
+    {"rank": 6, "racer": "arc", "time": 0.842, "split": 0.000, "class": "Soldier", "date": "2026-11-21 11:25"},
+    {"rank": 7, "racer": "arc", "time": 0.859, "split": 0.000, "class": "Soldier", "date": "2026-11-21 11:25"},
+    {"rank": 8, "racer": "arc", "time": 0.863, "split": 0.000, "class": "Soldier", "date": "2026-11-21 11:24"},
+    {"rank": 9, "racer": "arc", "time": 0.863, "split": 0.000, "class": "Pyro", "date": "2026-11-21 11:28"},
+    {"rank": 10, "racer": "arc", "time": 0.883, "split": 0.000, "class": "Soldier", "date": "2026-11-21 11:24"}
+  ]
+}

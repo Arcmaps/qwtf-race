@@ -1,0 +1,13 @@
+{
+  "map": "egypt",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 16.949, "split": 10.007, "class": "Soldier", "date": "2026-11-21 14:04"},
+    {"rank": 2, "racer": "arc", "time": 17.155, "split": 10.044, "class": "Soldier", "date": "2026-11-21 13:57"},
+    {"rank": 3, "racer": "arc", "time": 17.330, "split": 10.016, "class": "Soldier", "date": "2026-11-21 13:57"},
+    {"rank": 4, "racer": "arc", "time": 17.368, "split": 10.167, "class": "Soldier", "date": "2026-11-21 13:55"},
+    {"rank": 5, "racer": "arc", "time": 17.544, "split": 9.926, "class": "Soldier", "date": "2026-11-21 13:59"},
+    {"rank": 6, "racer": "arc", "time": 17.692, "split": 10.282, "class": "Soldier", "date": "2026-11-21 14:01"},
+    {"rank": 7, "racer": "arc", "time": 17.801, "split": 9.858, "class": "Soldier", "date": "2026-11-21 14:00"},
+    {"rank": 8, "racer": "arc", "time": 18.152, "split": 10.534, "class": "Soldier", "date": "2026-11-21 14:01"}
+  ]
+}

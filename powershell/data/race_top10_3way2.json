@@ -1,0 +1,8 @@
+{
+  "map": "3way2",
+  "records": [
+    {"rank": 1, "racer": "arc", "time": 17.177, "split": 10.820, "class": "Combat Medic", "date": "2026-11-21 20:02"},
+    {"rank": 2, "racer": "arc", "time": 17.296, "split": 11.095, "class": "Combat Medic", "date": "2026-11-21 20:06"},
+    {"rank": 3, "racer": "arc", "time": 17.980, "split": 11.727, "class": "Combat Medic", "date": "2026-11-21 19:55"}
+  ]
+}

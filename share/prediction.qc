@@ -817,7 +817,7 @@ static void TflCheckConfigUpdate() {
     CLAMP_UPDATE(max_rewind_ms, 0, 250);
     CLAMP_UPDATE(max_rewind_slow_projectile_ms, 0, tf_config.max_rewind_ms);
     CLAMP_UPDATE(max_rewind_fast_projectile_ms, 0, tf_config.max_rewind_ms);
-    CLAMP_UPDATE(max_rewind_grenade_ms, 0, 125);
+    CLAMP_UPDATE(max_rewind_grenade_ms, 0, 180);
 
     if (!ForwardDoorsPossible())
         tf_config.rewind_flags &= ~REWIND_FORWARD_DOORS;
@@ -825,7 +825,7 @@ static void TflCheckConfigUpdate() {
     if (update)
         TFL_SendConfig(world);
 
-    config_update.nextthink = time + 1;
+    config_update.nextthink = time + 5;
 };
 #undef CLAMP_UPDATE
 #undef CONFIG_UPDATE

@@ -1,5 +1,5 @@
 {
-    "updated":  "2026-11-21T07:12:27.7761750Z",
+    "updated":  "2026-11-22T05:52:57.3567863Z",
     "maps":  [
                  {
                      "map":  "1on1forts",
@@ -26,6 +26,22 @@
                      "updated":  "2026-11-19T14:30:00.6695422Z"
                  },
                  {
+                     "map":  "32smooth",
+                     "file":  "race_top10_32smooth_press.json",
+                     "records":  10,
+                     "best":  0.796,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T18:28:15.6706044Z"
+                 },
+                 {
+                     "map":  "3way2",
+                     "file":  "race_top10_3way2.json",
+                     "records":  3,
+                     "best":  17.177,
+                     "holder":  "arc",
+                     "updated":  "2026-11-22T03:06:33.8362317Z"
+                 },
+                 {
                      "map":  "5speed5",
                      "file":  "race_top10_5speed5.json",
                      "records":  10,
@@ -37,9 +53,9 @@
                      "map":  "8-1",
                      "file":  "race_top10_8-1.json",
                      "records":  10,
-                     "best":  15.542,
-                     "holder":  "[r3m]bill",
-                     "updated":  "2026-11-20T12:47:30.0254227Z"
+                     "best":  15.213,
+                     "holder":  "arc",
+                     "updated":  "2026-11-22T02:40:06.2917472Z"
                  },
                  {
                      "map":  "alchemy",
@@ -72,6 +88,14 @@
                      "best":  16.582,
                      "holder":  "arc",
                      "updated":  "2026-11-20T01:02:23.0571110Z"
+                 },
+                 {
+                     "map":  "egypt",
+                     "file":  "race_top10_egypt.json",
+                     "records":  8,
+                     "best":  16.949,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T21:04:17.9704260Z"
                  },
                  {
                      "map":  "egypt3",
@@ -108,10 +132,10 @@
                  {
                      "map":  "ff-destroy3",
                      "file":  "race_top10_ff-destroy3_press.json",
-                     "records":  2,
-                     "best":  10.825,
-                     "holder":  "arc",
-                     "updated":  "2026-11-21T07:05:55.3325159Z"
+                     "records":  5,
+                     "best":  9.687,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-21T23:17:30.7238082Z"
                  },
                  {
                      "map":  "ff-destroy3",
@@ -132,10 +156,10 @@
                  {
                      "map":  "ff-shoop",
                      "file":  "race_top10_ff-shoop.json",
-                     "records":  9,
-                     "best":  11.553,
-                     "holder":  "[r3m]bill",
-                     "updated":  "2026-11-19T14:08:25.9358005Z"
+                     "records":  10,
+                     "best":  10.931,
+                     "holder":  "arc",
+                     "updated":  "2026-11-21T23:12:16.4781701Z"
                  },
                  {
                      "map":  "ff-swoop",
@@ -172,10 +196,10 @@
                  {
                      "map":  "long",
                      "file":  "race_top10_long.json",
-                     "records":  8,
-                     "best":  19.410,
-                     "holder":  "arc",
-                     "updated":  "2026-11-21T00:22:09.2471996Z"
+                     "records":  10,
+                     "best":  17.418,
+                     "holder":  "[r3m]bill",
+                     "updated":  "2026-11-21T23:14:56.7227176Z"
                  },
                  {
                      "map":  "optics6",
@@ -189,9 +213,9 @@
                      "map":  "poop",
                      "file":  "race_top10_poop.json",
                      "records":  10,
-                     "best":  11.067,
+                     "best":  10.791,
                      "holder":  "arc",
-                     "updated":  "2026-11-16T06:31:28.4352015Z"
+                     "updated":  "2026-11-22T05:51:47.9013912Z"
                  },
                  {
                      "map":  "preskool",

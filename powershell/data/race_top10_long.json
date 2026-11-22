@@ -1,13 +1,15 @@
 {
   "map": "long",
   "records": [
-    {"rank": 1, "racer": "arc", "time": 19.410, "split": 9.482, "class": "Soldier", "date": "2026-11-20 17:16"},
-    {"rank": 2, "racer": "arc", "time": 19.435, "split": 9.347, "class": "Soldier", "date": "2026-11-20 17:18"},
-    {"rank": 3, "racer": "arc", "time": 19.517, "split": 9.501, "class": "Soldier", "date": "2026-11-20 17:17"},
-    {"rank": 4, "racer": "arc", "time": 19.577, "split": 9.385, "class": "Soldier", "date": "2026-11-20 17:20"},
-    {"rank": 5, "racer": "arc", "time": 19.691, "split": 9.539, "class": "Soldier", "date": "2026-11-20 17:15"},
-    {"rank": 6, "racer": "arc", "time": 19.750, "split": 9.545, "class": "Soldier", "date": "2026-11-20 17:14"},
-    {"rank": 7, "racer": "arc", "time": 19.751, "split": 9.546, "class": "Soldier", "date": "2026-11-20 17:22"},
-    {"rank": 8, "racer": "arc", "time": 19.808, "split": 9.600, "class": "Soldier", "date": "2026-11-20 17:21"}
+    {"rank": 1, "racer": "[r3m]bill", "time": 17.418, "split": 11.360, "class": "Soldier", "date": "2026-11-21 16:14"},
+    {"rank": 2, "racer": "[r3m]bill", "time": 18.725, "split": 10.353, "class": "Soldier", "date": "2026-11-21 16:14"},
+    {"rank": 3, "racer": "arc", "time": 19.410, "split": 9.482, "class": "Soldier", "date": "2026-11-20 17:16"},
+    {"rank": 4, "racer": "arc", "time": 19.435, "split": 9.347, "class": "Soldier", "date": "2026-11-20 17:18"},
+    {"rank": 5, "racer": "arc", "time": 19.517, "split": 9.501, "class": "Soldier", "date": "2026-11-20 17:17"},
+    {"rank": 6, "racer": "arc", "time": 19.577, "split": 9.385, "class": "Soldier", "date": "2026-11-20 17:20"},
+    {"rank": 7, "racer": "arc", "time": 19.691, "split": 9.539, "class": "Soldier", "date": "2026-11-20 17:15"},
+    {"rank": 8, "racer": "arc", "time": 19.750, "split": 9.545, "class": "Soldier", "date": "2026-11-20 17:14"},
+    {"rank": 9, "racer": "arc", "time": 19.751, "split": 9.546, "class": "Soldier", "date": "2026-11-20 17:22"},
+    {"rank": 10, "racer": "arc", "time": 19.808, "split": 9.600, "class": "Soldier", "date": "2026-11-20 17:21"}
   ]
 }
