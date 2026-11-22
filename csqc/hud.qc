@@ -1086,28 +1086,51 @@ void Hud_DrawRaceOverlay(float width, float height) {
         y += 18;
     }
 
+    static float c_split_val;
+    static string c_split_str;
+    static float c_sub_init;
+    static float c_best_val;
+    static float c_last_val;
+    static float c_none_flag;
+    static string c_sub_str;
+
     if (rsplit > 0 && rstate == RACE_STATE_RUNNING) {
-        string split_str = strcat("Flag Split: ", CSQC_FormatRaceTime(rsplit));
+        if (c_split_val != rsplit || c_split_str == "") {
+            if (c_split_str != "")
+                strunzone(c_split_str);
+            c_split_str = strzone(strcat("Flag Split: ", CSQC_FormatRaceTime(rsplit)));
+            c_split_val = rsplit;
+        }
         vector split_sz = '10 10 0';
-        float stw = stringwidth(split_str, TRUE, split_sz);
-        drawstring([(width - stw) / 2, y, 0], split_str, split_sz, '1 0.9 0.3', 1, 0);
+        float stw = stringwidth(c_split_str, TRUE, split_sz);
+        drawstring([(width - stw) / 2, y, 0], c_split_str, split_sz, '1 0.9 0.3', 1, 0);
         y += 13;
     }
 
     if (rbest > 0 || rlast > 0 || rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE) {
-        string sub_line = "";
-        if (rbest > 0)
-            sub_line = strcat("Map Record: ", CSQC_FormatRaceTime(rbest));
-        else if (rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE)
-            sub_line = "Map Record: None";
-        if (rlast > 0) {
-            if (sub_line != "")
-                sub_line = strcat(sub_line, "   |   ");
-            sub_line = strcat(sub_line, "Last Run: ", CSQC_FormatRaceTime(rlast));
+        float show_none = (rstate == RACE_STATE_PRERUN || rstate == RACE_STATE_NONE) ? 1 : 0;
+        if (!c_sub_init || c_best_val != rbest || c_last_val != rlast || c_none_flag != show_none || c_sub_str == "") {
+            if (c_sub_str != "")
+                strunzone(c_sub_str);
+            string sub_tmp = "";
+            if (rbest > 0)
+                sub_tmp = strcat("Map Record: ", CSQC_FormatRaceTime(rbest));
+            else if (show_none)
+                sub_tmp = "Map Record: None";
+            if (rlast > 0) {
+                if (sub_tmp != "")
+                    sub_tmp = strcat(sub_tmp, "   |   ");
+                sub_tmp = strcat(sub_tmp, "Last Run: ", CSQC_FormatRaceTime(rlast));
+            }
+            c_sub_str = strzone(sub_tmp);
+            c_best_val = rbest;
+            c_last_val = rlast;
+            c_none_flag = show_none;
+            c_sub_init = TRUE;
         }
         vector sub_sz = '8 8 0';
-        float sub_w = stringwidth(sub_line, TRUE, sub_sz);
-        drawstring([(width - sub_w) / 2, y, 0], sub_line, sub_sz, '0.85 0.85 0.85', 0.9, 0);
+        float sub_w = stringwidth(c_sub_str, TRUE, sub_sz);
+        drawstring([(width - sub_w) / 2, y, 0], c_sub_str, sub_sz, '0.85 0.85 0.85', 0.9, 0);
         y += 12;
     }
 

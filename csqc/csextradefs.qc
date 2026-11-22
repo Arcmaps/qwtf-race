@@ -85,8 +85,7 @@ float number_of_teams;
 float last_selected_skin;
 float last_team;
 vector sentry_pos;
-vector dispenser_pos, dispenser_render_pos;
-vector dispenser_angles;
+vector dispenser_pos;
 
 vector touched_dispenser_pos;
 //entity player_list_head;
@@ -434,7 +433,6 @@ enum PanelID:float {
     HUDP_SPEED,
     HUDP_SPEEDBAR,
     HUDP_PING,
-    HUDP_DISPCAM,
     HUDP_OPTIONS,  // Should be the last HUD element so that it's always on top.
     HUDP_LAST = HUDP_OPTIONS,
 

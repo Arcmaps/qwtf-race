@@ -936,15 +936,17 @@ void (entity p) TeamFortress_SetSpeed = {
     float new_max = Class_MaxSpeed(p.playerclass);
 
     tf = 0;
-    te = find(world, classname, "item_tfgoal");
-    while ((te != world) && (tf == 0)) {
-        if (te.owner == p) {
-            if (te.goal_activation & TFGI_SLOW) {
-                tf = 1;
-                new_max /= 2;
+    if (p.has_flag) {
+        te = find(world, classname, "item_tfgoal");
+        while ((te != world) && (tf == 0)) {
+            if (te.owner == p) {
+                if (te.goal_activation & TFGI_SLOW) {
+                    tf = 1;
+                    new_max /= 2;
+                }
             }
+            te = find(te, classname, "item_tfgoal");
         }
-        te = find(te, classname, "item_tfgoal");
     }
 
     if (p.tfstate & TFSTATE_TRANQUILISED)

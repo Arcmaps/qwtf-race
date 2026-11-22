@@ -832,13 +832,14 @@ void (entity pl) Race_Cmd_Race = {
     // Reset map and respawn racer cleanly at the fixed Blue spawn for the 3-second countdown
     Race_ResetMapState();
 
+    float cd_rtt = min(max(pl.client_ping, 0), 180) / 1000.0;
     pl.race_state = RACE_STATE_COUNTDOWN;
-    pl.race_start_time = time + 3.0;
+    pl.race_start_time = time + 3.0 + cd_rtt;
     pl.race_last_tick = 4;
     pl.race_flag_split_time = 0;
 
     race_state_global = RACE_STATE_COUNTDOWN;
-    race_timer_start = pl.race_start_time;
+    race_timer_start = pl.race_start_time - cd_rtt;
     race_split_time = 0;
 
     entity oldself = self;
@@ -1194,14 +1195,23 @@ void () Race_Controller_Think = {
             return;
         }
     } else if (r.race_state == RACE_STATE_COUNTDOWN) {
-        float cd_rem = ceil(r.race_start_time - time);
+        self.nextthink = time + 0.013;
+        float rtt = min(max(r.client_ping, 0), 180) / 1000.0;
+        float cue_time = r.race_start_time - rtt;
+        float cd_rem = ceil(cue_time - time);
         if (cd_rem < r.race_last_tick && cd_rem >= 1) {
             r.race_last_tick = cd_rem;
             CenterPrint(r, strcat("\n\n\bRace starts in:\b ", ftos(cd_rem), "...\n\nClass: ", TeamFortress_GetClassName(r.playerclass), "\n"));
             Race_BroadcastSound("play buttons/switch04.wav\n");
         }
+        if (time >= cue_time && r.race_last_tick > 0) {
+            // Send GO! cue early by RTT so the racer's first input arrives right as server unfreezes at race_start_time
+            r.race_last_tick = 0;
+            CenterPrint(r, "\n\n\bGO!\b\n");
+            Race_BroadcastSound("play misc/talk.wav\n");
+        }
         if (time >= r.race_start_time) {
-            // GO! Start timer in spawn and unfreeze racer
+            // Unfreeze racer and start server clock at exact T
             r.race_state = RACE_STATE_RUNNING;
             r.race_start_time = time;
             r.race_last_tick = 91;
@@ -1231,8 +1241,6 @@ void () Race_Controller_Think = {
             W_UpdateWeaponModel(r);
             self = oldself;
 
-            CenterPrint(r, "\n\n\bGO!\b\n");
-            Race_BroadcastSound("play misc/talk.wav\n");
             Race_SetServerStatus(strcat("Racing: ", r.netname));
         }
     } else if (r.race_state == RACE_STATE_RUNNING) {

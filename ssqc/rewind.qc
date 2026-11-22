@@ -434,9 +434,17 @@ void Forward_OpenDoors(entity player) {
     if (!RewindFlagEnabled(REWIND_FORWARD_DOORS))
         return;
 
-    vector offset = min(550, vlen(player.velocity)) * normalize(player.velocity);
-    offset *= min(player.client_ping, 180) / 1000.0;
-    traceline(player.origin, player.origin + offset, MOVE_TRIGGERS, player);
+    float spd = vlen(player.velocity);
+    if (spd < 10)
+        return;
+
+    float ping_s = min(max(player.client_ping, 0), 180) / 1000.0;
+    if (ping_s <= 0)
+        return;
+
+    vector offset = min(1700, spd) * normalize(player.velocity) * ping_s;
+    const vector DOOR_MINS = [-16, -16, -24], DOOR_MAXS = [16, 16, 32];
+    tracebox(player.origin, DOOR_MINS, DOOR_MAXS, player.origin + offset, MOVE_TRIGGERS, player);
 
     if (trace_fraction < 1 && trace_ent.solid == SOLID_TRIGGER) {
         entity held_self = self;

@@ -1243,7 +1243,6 @@ var FO_Hud_Panel Hud_Panels[] = {
     {HUDP_SPEED, "speed", "Speed",                     '4 15',    '26 26',  1,1.4,0,0,0, drawTextPanel, {return CVARF(tf_fte_hud) ? ftos((int)PlanarSpeed()) : "";}, 0, 4},
     {HUDP_SPEEDBAR, "speedbar", "Speed Bar",           '4 30',    '150 10',  1,1.4,0,0,0, drawSpeedBar, {return "";}, 0, 4},
     {HUDP_PING, "ping", "Ping",           '4 15',    '120 12',  1,1.4,0,0,0, drawTextPanel, getPingPanelText, 0, HUD_SNAP_TOP_RIGHT},
-    {HUDP_DISPCAM, "dispcam", "DispCam",    '10 50',   '150 84', 1,   0,1,0,1, drawSimplePanel, {return "";}, 1},
     {HUDP_OPTIONS, "hudoptions", FO_HUD_OPTIONS_NAME,    '10 10',   '150 182',1,   0,1,0,1, doNothing, {return "";}, 1},
 };
 

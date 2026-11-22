@@ -236,12 +236,6 @@ DEFCVAR_FLOAT(fov, 90);
 
 inline float TrackingPlayer() { return player_localentnum <= 32; }
 
-static inline float ShowDispCam() {
-    return pstate_server.playerclass == PC_ENGINEER &&
-           SBAR.HasDispenser == BUILD_STATE_BUILT &&
-           CVARF(tf_dispcam);
-}
-
 static void UpdateRenderSelf() {
     static float walkframe;
     static float last_vel;
@@ -293,42 +287,6 @@ static void UpdateRenderSelf() {
     next_update = time + 0.1;
 }
 
-static void CSQC_DispCam(float width, float height) {
-    const float cam_w = 150;
-
-
-    if (fo_hud_editor)
-        return;
-
-    vector cam_pos = getHudPanel(HUDP_DISPCAM)->Position;
-    if (vlen(PM_Org() - dispenser_pos) > DISP_CAM_RANGE) {
-        drawstring(cam_pos, "DispCam out of range", '8 8', '1 0 0', 1, 0);
-        return;
-    }
-
-    clearscene();
-    setviewprop(VF_AFOV, 75);
-
-    const vector size = [cam_w, cam_w * 9/16];
-
-    setviewprop(VF_MIN_X, cam_pos.x);
-    setviewprop(VF_SIZE_X, size.x);
-    setviewprop(VF_MIN_Y, cam_pos.y);
-    setviewprop(VF_SIZE_Y, size.y);
-
-    setviewprop(VF_ORIGIN, dispenser_render_pos);
-    setviewprop(VF_ANGLES, dispenser_angles);
-
-    addentities(MASK_ENGINE);
-
-    UpdateRenderSelf();
-    addentity(pengine.renderself);
-
-    vector bd = '2 2';
-    drawfill(cam_pos - bd, size + 2 * bd, '0.5 0.7 0.5', 0.7);
-    renderscene();
-}
-
 noref void(float width, float height, float menushown) CSQC_UpdateView = {
     clearscene();
     setproperty(VF_DRAWWORLD, 1);     // we want to draw our world!
@@ -362,9 +320,6 @@ noref void(float width, float height, float menushown) CSQC_UpdateView = {
     RenderHitTexts();
     Hud_UpdateView(width, height, menushown);
     PMD_DrawGraphs(width);
-
-    if (ShowDispCam())
-        CSQC_DispCam(width, height);
 
     // Work around bug in some versions of FTE.  See pmove.qc
     recent_pmove_vel_z = pmove_vel_z;
@@ -757,10 +712,20 @@ noref float(string cmd) CSQC_ConsoleCommand = {
             }
             break;
         case "+aux_jump":
+            if (game_state.is_spectator) {
+                localcmd("+jump\n");
+                break;
+            }
             jump_counter++;
             next_forced_buttons |= BUTTON_JUMP;
             break;
         case "-aux_jump":
+            if (game_state.is_spectator) {
+                localcmd("-jump\n");
+                jump_counter = 0;
+                next_forced_buttons &= ~BUTTON_JUMP;
+                break;
+            }
             jump_counter--;
             if (jump_counter <= 0) {
                 jump_counter = 0;

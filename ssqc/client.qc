@@ -2020,6 +2020,15 @@ void (entity player) UpdateScoreboardInfo = {
         return;
     player.next_scoreboard_update = time + 1;
 
+    if (race_mode) {
+        CheckSetInfoKey(player, "deaths", player.deaths);
+        CheckSetInfoKey(player, "caps", player.caps);
+        CheckSetInfoKey(player, "touches", player.touches);
+        CheckSetInfoKey(player, "team_no", player.team_no);
+        CheckSetInfoKey(player, "playerclass", player.playerclass);
+        return;
+    }
+
     CheckSetInfoKey(player, "afflicted", player.afflicted);
     CheckSetInfoKey(player, "teamafflicted", player.teamafflicted);
     CheckSetInfoKey(player, "damagegiven", player.damagegiven);
@@ -2751,7 +2760,7 @@ void () PlayerPreThink = {
     }
 
     // Check if timelimit/fraglimit has been met
-    if(!votemode && !(duelmode && duel_allow_draw)) CheckRules();
+    if(!race_mode && !votemode && !(duelmode && duel_allow_draw)) CheckRules();
 
     if (self.playerclass != 0 || votemode) {
         WaterMove();
@@ -3039,7 +3048,7 @@ static void PlayerPostThinkAlive() {
         FO_ReloadFrame();
         ButtonFrame();
         W_WeaponFrame();
-        if (self.cheat_check <= time) {
+        if (!race_mode && self.cheat_check <= time) {
             TeamFortress_CheckTeamCheats();
             self.cheat_check = time + 3;
         }
@@ -3065,7 +3074,8 @@ void PlayerPeriodicThink(float is_player) {
         self.sent_tf_config = 1;
     }
 
-    TFL_SendLogin();
+    if (!race_mode)
+        TFL_SendLogin();
 }
 
 void () PlayerPostThink = {
@@ -3938,17 +3948,22 @@ void ClientsFlagUpdate(entity only) {
     }
 
     if (do_flag) {
-        entity tfdet = find(world, classname, "info_tfdetect");
-        if (tfdet) {
-            float item_status[] = {tfdet.display_item_status1, tfdet.display_item_status2,
-                tfdet.display_item_status3, tfdet.display_item_status4};
-
-            for (float i = 0; i < item_status.length; i++) {
-                entity fe = Finditem(item_status[i]);
-                if (fe)
-                    UpdateClientsFlagStatus(fe, only);
+        static float flag_cache_init;
+        static entity cached_flag_0, cached_flag_1, cached_flag_2, cached_flag_3;
+        if (!flag_cache_init) {
+            entity tfdet = find(world, classname, "info_tfdetect");
+            if (tfdet) {
+                cached_flag_0 = tfdet.display_item_status1 ? Finditem(tfdet.display_item_status1) : world;
+                cached_flag_1 = tfdet.display_item_status2 ? Finditem(tfdet.display_item_status2) : world;
+                cached_flag_2 = tfdet.display_item_status3 ? Finditem(tfdet.display_item_status3) : world;
+                cached_flag_3 = tfdet.display_item_status4 ? Finditem(tfdet.display_item_status4) : world;
+                flag_cache_init = TRUE;
             }
         }
+        if (cached_flag_0) UpdateClientsFlagStatus(cached_flag_0, only);
+        if (cached_flag_1) UpdateClientsFlagStatus(cached_flag_1, only);
+        if (cached_flag_2) UpdateClientsFlagStatus(cached_flag_2, only);
+        if (cached_flag_3) UpdateClientsFlagStatus(cached_flag_3, only);
     }
 
     if (do_button) {
